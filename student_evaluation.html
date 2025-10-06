@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生评价系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0f52ba;
+            --primary-light: #e6f0ff;
+            --secondary-color: #f8fafc;
+            --text-color: #333;
+            --border-color: #ddd;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            color: var(--text-color);
+            background-color: #fff;
+        }
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            background-color: var(--primary-color);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+        .nav-link {
+            color: var(--text-color) !important;
+        }
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            background-color: var(--primary-light);
+        }
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .rating input {
+            display: none;
+        }
+        .rating label {
+            float: right;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.3s;
+        }
+        .rating label:before {
+            content: '\f005';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 1.5rem;
+        }
+        .rating input:checked ~ label,
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: var(--primary-color);
+        }
+        .progress-ring {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) 0% 75%, var(--primary-light) 75% 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .progress-ring::before {
+            content: '';
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background-color: white;
+        }
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        
+        /* AI助手样式 */
+        .ai-assistant-container {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ai-assistant-hidden {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        
+        .ai-assistant-header {
+            background: linear-gradient(135deg, var(--primary-color), #1e40af);
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-assistant-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+        
+        .ai-message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+        
+        .ai-message.user {
+            background: var(--primary-color);
+            color: white;
+            margin-left: auto;
+        }
+        
+        .ai-message.assistant {
+            background: white;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .ai-input-area {
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ai-input {
+            flex: 1;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            padding: 8px 15px;
+            outline: none;
+        }
+        
+        .ai-send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .ai-toggle-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 999;
+        }
+        
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            90%, 100% { content: ''; }
+        }
+        
+        .analysis-panel {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .insight-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">阳光招生平台</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="admission_management.html">项目招生管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">项目学生管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="study_abroad.html">留学申请</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="student_evaluation.html">学生评价</a></li>
+                    <li class="nav-item"><a class="nav-link" href="teacher_evaluation.html">教师评价</a></li>
+                    <li class="nav-item"><a class="nav-link" href="college_evaluation.html">院校评价</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html">数据驾驶舱</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">重点工作进度</a></li>
+                    <li class="nav-item"><a class="nav-link" href="academic_management.html">教务管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">迎新系统</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">校友系统</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <div class="container py-8">
+        <h1 class="section-title">学生评价系统</h1>
+
+        <!-- AI智能分析面板 -->
+        <div class="analysis-panel">
+            <h3 class="h5 mb-3"><i class="fas fa-robot text-primary me-2"></i>AI智能分析</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="insight-card">
+                        <h6 class="text-primary">学术潜力预测</h6>
+                        <p class="mb-1">基于历史数据分析，该学生在计算机科学领域表现优异</p>
+                        <small class="text-muted">置信度: 92%</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="insight-card">
+                        <h6 class="text-primary">发展建议</h6>
+                        <p class="mb-1">建议加强实践项目经验，提升工程实践能力</p>
+                        <small class="text-muted">AI推荐</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="insight-card">
+                        <h6 class="text-primary">匹配度分析</h6>
+                        <p class="mb-1">与目标专业匹配度高，建议重点培养</p>
+                        <small class="text-muted">匹配度: 88%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 学生基本信息 -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h4 mb-0">学生基本信息</h2>
+                <div>
+                    <button class="btn btn-outline-secondary me-2" onclick="exportEvaluationData('student-profile')" title="导出学生信息">
+                        <i class="fas fa-download"></i> 导出
+                    </button>
+                    <button class="btn btn-outline-primary me-2" id="aiAnalyzeProfile">
+                        <i class="fas fa-brain me-2"></i>AI画像分析
+                    </button>
+                    <button class="btn btn-primary" id="loadStudentProfile">
+                        <i class="fas fa-sync-alt me-2"></i>同步学生画像数据
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-6">
+                    <div class="col-md-3 text-center">
+                        <div class="rounded-full overflow-hidden w-40 h-40 mx-auto mb-3 border-4 border-primary">
+                            <img src="https://picsum.photos/150/150" alt="学生照片" class="w-full h-full object-cover" id="studentPhoto">
+                        </div>
+                        <h3 class="h5 font-bold" id="studentName">张三</h3>
+                        <p class="text-primary" id="studentMajor">计算机科学与技术专业</p>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h4 class="h6 text-primary mb-2">基本信息</h4>
+                                <ul class="list-unstyled">
+                                    <li class="mb-1"><strong>性别：</strong><span id="studentGender">男</span></li>
+                                    <li class="mb-1"><strong>年龄：</strong><span id="studentAge">22岁</span></li>
+                                    <li class="mb-1"><strong>GPA：</strong><span id="studentGPA">3.8/4.0</span></li>
+                                    <li class="mb-1"><strong>英语成绩：</strong><span id="studentEnglish">IELTS 7.5</span></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="h6 text-primary mb-2">教育背景</h4>
+                                <ul class="list-unstyled">
+                                    <li class="mb-1"><strong>本科院校：</strong><span id="studentSchool">中国石油大学(北京)</span></li>
+                                    <li class="mb-1"><strong>专业：</strong><span id="studentMajor2">计算机科学与技术</span></li>
+                                    <li class="mb-1"><strong>毕业时间：</strong><span id="studentGraduation">2025年6月</span></li>
+                                    <li class="mb-1"><strong>学士学位：</strong><span id="studentDegree">工学学士</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="h6 text-primary mb-2">技能特长</h4>
+                                <div class="flex flex-wrap gap-2" id="studentSkills">
+                                    <span class="badge bg-primary-light text-primary">Python</span>
+                                    <span class="badge bg-primary-light text-primary">Java</span>
+                                    <span class="badge bg-primary-light text-primary">机器学习</span>
+                                    <span class="badge bg-primary-light text-primary">数据结构</span>
+                                    <span class="badge bg-primary-light text-primary">算法设计</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="h6 text-primary mb-2">兴趣领域</h4>
+                                <div class="flex flex-wrap gap-2" id="studentInterests">
+                                    <span class="badge bg-primary-light text-primary">人工智能</span>
+                                    <span class="badge bg-primary-light text-primary">数据科学</span>
+                                    <span class="badge bg-primary-light text-primary">计算机视觉</span>
+                                    <span class="badge bg-primary-light text-primary">自然语言处理</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 评价表单 -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h4 mb-0">学生评价表单</h2>
+                <div>
+                    <button class="btn btn-outline-secondary me-2" onclick="exportEvaluationData('evaluation-form')" title="导出评价表单">
+                        <i class="fas fa-download"></i> 导出
+                    </button>
+                    <button class="btn btn-outline-primary" id="aiSuggestEvaluation">
+                        <i class="fas fa-magic me-2"></i>AI评价建议
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="evaluationForm">
+                    <div class="row mb-6">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">学术能力评价</label>
+                            <div class="rating mb-2">
+                                <input type="radio" id="academic5" name="academic" value="5"><label for="academic5"></label>
+                                <input type="radio" id="academic4" name="academic" value="4"><label for="academic4"></label>
+                                <input type="radio" id="academic3" name="academic" value="3"><label for="academic3"></label>
+                                <input type="radio" id="academic2" name="academic" value="2"><label for="academic2"></label>
+                                <input type="radio" id="academic1" name="academic" value="1"><label for="academic1"></label>
+                            </div>
+                            <textarea class="form-control" rows="3" placeholder="请输入学术能力评价意见"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">语言能力评价</label>
+                            <div class="rating mb-2">
+                                <input type="radio" id="language5" name="language" value="5"><label for="language5"></label>
+                                <input type="radio" id="language4" name="language" value="4"><label for="language4"></label>
+                                <input type="radio" id="language3" name="language" value="3"><label for="language3"></label>
+                                <input type="radio" id="language2" name="language" value="2"><label for="language2"></label>
+                                <input type="radio" id="language1" name="language" value="1"><label for="language1"></label>
+                            </div>
+                            <textarea class="form-control" rows="3" placeholder="请输入语言能力评价意见"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">专业技能评价</label>
+                            <div class="rating mb-2">
+                                <input type="radio" id="skill5" name="skill" value="5"><label for="skill5"></label>
+                                <input type="radio" id="skill4" name="skill" value="4"><label for="skill4"></label>
+                                <input type="radio" id="skill3" name="skill" value="3"><label for="skill3"></label>
+                                <input type="radio" id="skill2" name="skill" value="2"><label for="skill2"></label>
+                                <input type="radio" id="skill1" name="skill" value="1"><label for="skill1"></label>
+                            </div>
+                            <textarea class="form-control" rows="3" placeholder="请输入专业技能评价意见"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">科研潜力评价</label>
+                            <div class="rating mb-2">
+                                <input type="radio" id="research5" name="research" value="5"><label for="research5"></label>
+                                <input type="radio" id="research4" name="research" value="4"><label for="research4"></label>
+                                <input type="radio" id="research3" name="research" value="3"><label for="research3"></label>
+                                <input type="radio" id="research2" name="research" value="2"><label for="research2"></label>
+                                <input type="radio" id="research1" name="research" value="1"><label for="research1"></label>
+                            </div>
+                            <textarea class="form-control" rows="3" placeholder="请输入科研潜力评价意见"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">实践经验评价</label>
+                            <div class="rating mb-2">
+                                <input type="radio" id="practice5" name="practice" value="5"><label for="practice5"></label>
+                                <input type="radio" id="practice4" name="practice" value="4"><label for="practice4"></label>
+                                <input type="radio" id="practice3" name="practice" value="3"><label for="practice3"></label>
+                                <input type="radio" id="practice2" name="practice" value="2"><label for="practice2"></label>
+                                <input type="radio" id="practice1" name="practice" value="1"><label for="practice1"></label>
+                            </div>
+                            <textarea class="form-control" rows="3" placeholder="请输入实践经验评价意见"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">综合表现评价</label>
+                            <div class="rating mb-2">
+                                <input type="radio" id="comprehensive5" name="comprehensive" value="5"><label for="comprehensive5"></label>
+                                <input type="radio" id="comprehensive4" name="comprehensive" value="4"><label for="comprehensive4"></label>
+                                <input type="radio" id="comprehensive3" name="comprehensive" value="3"><label for="comprehensive3"></label>
+                                <input type="radio" id="comprehensive2" name="comprehensive" value="2"><label for="comprehensive2"></label>
+                                <input type="radio" id="comprehensive1" name="comprehensive" value="1"><label for="comprehensive1"></label>
+                            </div>
+                            <textarea class="form-control" rows="3" placeholder="请输入综合表现评价意见"></textarea>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">提交评价</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 评价结果展示 -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h4 mb-0">评价结果展示</h2>
+                <button class="btn btn-outline-primary" id="aiAnalyzeResults">
+                    <i class="fas fa-chart-line me-2"></i>AI深度分析
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row mb-6">
+                    <div class="col-md-4 text-center">
+                        <div class="progress-ring mx-auto mb-3" id="overallRating">
+                            <div class="progress-text">
+                                <div class="h3 font-bold">4.5</div>
+                                <div class="text-sm">综合评分</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <canvas id="evaluationChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>学术能力</span>
+                            <span>4.8/5.0</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 96%" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>语言能力</span>
+                            <span>4.5/5.0</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>专业技能</span>
+                            <span>4.6/5.0</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 92%" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>科研潜力</span>
+                            <span>4.2/5.0</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 84%" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>实践经验</span>
+                            <span>4.0/5.0</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>综合表现</span>
+                            <span>4.5/5.0</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 评价历史记录 -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h4 mb-0">评价历史记录</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>评价人</th>
+                                <th>评价时间</th>
+                                <th>综合评分</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>李教授</td>
+                                <td>2025-06-10</td>
+                                <td>4.5</td>
+                                <td><a href="#" class="text-primary">查看详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>王老师</td>
+                                <td>2025-05-20</td>
+                                <td>4.3</td>
+                                <td><a href="#" class="text-primary">查看详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>张主任</td>
+                                <td>2025-04-15</td>
+                                <td>4.2</td>
+                                <td><a href="#" class="text-primary">查看详情</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI助手 -->
+    <button class="ai-toggle-btn" id="aiToggleBtn">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <div class="ai-assistant-container ai-assistant-hidden" id="aiAssistant">
+        <div class="ai-assistant-header">
+            <div>
+                <i class="fas fa-robot me-2"></i>
+                <strong>AI评价助手</strong>
+            </div>
+            <button class="btn btn-sm" id="aiCloseBtn" style="color: white; background: none; border: none;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="ai-assistant-body" id="aiChatBody">
+            <div class="ai-message assistant">
+                <strong>AI助手:</strong> 您好！我是智能评价助手，可以帮您分析学生表现、生成评价建议。请问有什么可以帮助您的吗？
+            </div>
+        </div>
+        <div class="ai-input-area">
+            <input type="text" class="ai-input" id="aiInput" placeholder="输入您的问题...">
+            <button class="ai-send-btn" id="aiSendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer" style="background-color: #f8f9fa; color: #333; padding: 20px 0; margin-top: 40px; border-top: 1px solid #ddd;">
+        <div class="container text-center">
+            <p>© 2025 教育部留学服务中心 版权所有</p>
+            <p>联系电话：010-62677800 | 邮箱：admin@cscse.edu.cn</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 初始化评价图表
+        const ctx = document.getElementById('evaluationChart').getContext('2d');
+        const evaluationChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['学术能力', '语言能力', '专业技能', '科研潜力', '实践经验', '综合表现'],
+                datasets: [{
+                    label: '评价分数',
+                    data: [4.8, 4.5, 4.6, 4.2, 4.0, 4.5],
+                    backgroundColor: 'rgba(15, 82, 186, 0.2)',
+                    borderColor: 'rgba(15, 82, 186, 1)',
+                    pointBackgroundColor: 'rgba(15, 82, 186, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(15, 82, 186, 1)'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 5
+                    }
+                }
+            }
+        });
+
+        // 同步学生画像数据功能
+        document.getElementById('loadStudentProfile').addEventListener('click', function() {
+            // 模拟从留学申请系统获取学生画像数据
+            // 在实际应用中，这里会发送AJAX请求到服务器获取数据
+            alert('已成功从留学申请系统同步学生画像数据！');
+        });
+
+        // 评价表单提交功能
+        document.getElementById('evaluationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('评价提交成功！');
+        });
+
+        // AI助手功能
+        const aiToggleBtn = document.getElementById('aiToggleBtn');
+        const aiAssistant = document.getElementById('aiAssistant');
+        const aiCloseBtn = document.getElementById('aiCloseBtn');
+        const aiInput = document.getElementById('aiInput');
+        const aiSendBtn = document.getElementById('aiSendBtn');
+        const aiChatBody = document.getElementById('aiChatBody');
+
+        let isAiVisible = false;
+
+        aiToggleBtn.addEventListener('click', function() {
+            if (isAiVisible) {
+                aiAssistant.classList.add('ai-assistant-hidden');
+                aiToggleBtn.style.display = 'block';
+            } else {
+                aiAssistant.classList.remove('ai-assistant-hidden');
+                aiToggleBtn.style.display = 'none';
+            }
+            isAiVisible = !isAiVisible;
+        });
+
+        aiCloseBtn.addEventListener('click', function() {
+            aiAssistant.classList.add('ai-assistant-hidden');
+            aiToggleBtn.style.display = 'block';
+            isAiVisible = false;
+        });
+
+        function addAiMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${isUser ? 'user' : 'assistant'}`;
+            messageDiv.innerHTML = isUser ? message : `<strong>AI助手:</strong> ${message}`;
+            aiChatBody.appendChild(messageDiv);
+            aiChatBody.scrollTop = aiChatBody.scrollHeight;
+        }
+
+        function simulateAiResponse(userMessage) {
+            const responses = {
+                '评价建议': '基于学生的学术表现和技能特长，建议重点关注其在人工智能和数据科学方面的潜力。该学生GPA较高，英语能力优秀，适合推荐到顶尖院校。',
+                '学术分析': '该学生在计算机科学领域表现突出，Python和机器学习技能扎实。建议在科研潜力方面给予更多指导和机会。',
+                '发展建议': '建议该学生参与更多实践项目，特别是在计算机视觉和自然语言处理领域，以提升实际应用能力。',
+                '匹配分析': '根据学生背景分析，推荐申请美国TOP30或英国G5院校的计算机科学相关专业，成功率较高。'
+            };
+
+            let response = '我理解您的问题。';
+            for (let key in responses) {
+                if (userMessage.includes(key) || userMessage.includes(key.substring(0, 2))) {
+                    response = responses[key];
+                    break;
+                }
+            }
+
+            if (userMessage.includes('分析') || userMessage.includes('评价')) {
+                response = responses['评价建议'];
+            } else if (userMessage.includes('建议') || userMessage.includes('推荐')) {
+                response = responses['发展建议'];
+            } else if (userMessage.includes('匹配') || userMessage.includes('院校')) {
+                response = responses['匹配分析'];
+            }
+
+            setTimeout(() => {
+                addAiMessage(response);
+            }, 1000);
+        }
+
+        aiSendBtn.addEventListener('click', function() {
+            const message = aiInput.value.trim();
+            if (message) {
+                addAiMessage(message, true);
+                aiInput.value = '';
+                
+                // 显示加载状态
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'ai-message assistant loading-dots';
+                loadingDiv.innerHTML = '<strong>AI助手:</strong> 正在分析';
+                aiChatBody.appendChild(loadingDiv);
+                aiChatBody.scrollTop = aiChatBody.scrollHeight;
+                
+                setTimeout(() => {
+                    aiChatBody.removeChild(loadingDiv);
+                    simulateAiResponse(message);
+                }, 1000);
+            }
+        });
+
+        aiInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                aiSendBtn.click();
+            }
+        });
+
+        // AI功能按钮事件
+        document.getElementById('aiAnalyzeProfile').addEventListener('click', function() {
+            addAiMessage('请帮我分析这个学生的学术画像', true);
+            if (!isAiVisible) {
+                aiToggleBtn.click();
+            }
+            setTimeout(() => {
+                addAiMessage('基于该学生的信息分析：\n\n1. **学术优势**: GPA 3.8表现优秀，英语IELTS 7.5达到顶尖院校要求\n2. **技能匹配**: Python、机器学习等技能与目标专业高度匹配\n3. **发展潜力**: 在人工智能和数据科学领域有很强的发展潜力\n4. **建议方向**: 适合申请计算机科学、数据科学或AI相关专业');
+            }, 1500);
+        });
+
+        document.getElementById('aiSuggestEvaluation').addEventListener('click', function() {
+            addAiMessage('请为这个学生提供评价建议', true);
+            if (!isAiVisible) {
+                aiToggleBtn.click();
+            }
+            setTimeout(() => {
+                addAiMessage('基于学生背景，我建议：\n\n**学术能力**: 4.5-5.0分，GPA和专业技能表现优秀\n**语言能力**: 4.5分，IELTS 7.5已达到优秀水平\n**专业技能**: 4.5分，编程和算法基础扎实\n**科研潜力**: 4.0-4.5分，建议提供更多科研机会\n**实践经验**: 3.5-4.0分，需要加强项目实践\n**综合表现**: 4.5分，整体表现优秀，值得重点培养');
+            }, 1500);
+        });
+
+        document.getElementById('aiAnalyzeResults').addEventListener('click', function() {
+            addAiMessage('请深度分析这个学生的评价结果', true);
+            if (!isAiVisible) {
+                aiToggleBtn.click();
+            }
+            setTimeout(() => {
+                addAiMessage('深度分析结果：\n\n**优势领域**: 学术能力(4.8)和专业技能(4.6)是最大优势\n**提升空间**: 实践经验(4.0)有较大提升空间\n**发展建议**: \n1. 继续保持学术优势，参与更多科研项目\n2. 增加实习和项目经验\n3. 考虑申请顶尖院校的研究型项目\n\n**院校匹配**: 适合申请MIT、Stanford、CMU等顶尖计算机科学项目');
+            }, 1500);
+        });
+        
+        // 数据导出函数
+        function exportEvaluationData(type) {
+            if (typeof DataExportManager !== 'undefined') {
+                let data = [];
+                let filename = '';
+                
+                switch(type) {
+                    case 'student-profile':
+                        data = [
+                            ['项目', '内容'],
+                            ['姓名', '张三'],
+                            ['性别', '男'],
+                            ['年龄', '22岁'],
+                            ['GPA', '3.8/4.0'],
+                            ['英语成绩', 'IELTS 7.5'],
+                            ['本科院校', '中国石油大学(北京)'],
+                            ['专业', '计算机科学与技术'],
+                            ['技能', 'Python, 机器学习, 数据分析']
+                        ];
+                        filename = '学生基本信息';
+                        break;
+                    case 'evaluation-form':
+                        data = [
+                            ['评价项目', '评分', '评价意见'],
+                            ['学术能力', '4.8', '学术表现优秀，GPA达到3.8'],
+                            ['语言能力', '4.5', 'IELTS 7.5，英语水平优秀'],
+                            ['专业技能', '4.6', 'Python和机器学习技能扎实'],
+                            ['科研潜力', '4.2', '有一定科研基础，需要更多实践'],
+                            ['实践经验', '4.0', '项目经验丰富，但需要更多实习经历'],
+                            ['综合评价', '4.5', '整体表现优秀，值得重点培养']
+                        ];
+                        filename = '学生评价表单';
+                        break;
+                    default:
+                        data = [['项目', '内容'], ['评价系统', '暂无数据']];
+                        filename = '评价系统数据';
+                }
+                
+                if (window.exportUI) {
+                    window.exportUI.showExportModal(data, filename);
+                }
+            }
+        }
+        
+        // 初始化数据导出功能
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof DataExportManager !== 'undefined') {
+                window.dataExportManager = new DataExportManager();
+                window.exportUI = new ExportUI();
+            }
+        });
+    </script>
+    
+    <!-- 引入数据导出功能 -->
+    <script src="js/data-export.js"></script>
+</body>
+</html>

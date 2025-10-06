@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阳光招生平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #165DFF;
+            --primary-light: #E8F3FF;
+            --primary-dark: #0E42D2;
+            --text-color: #333333;
+            --text-light: #666666;
+            --border-color: #E5E7EB;
+            --white: #FFFFFF;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+        }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            color: var(--text-color);
+            background-color: var(--white);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: var(--white);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            padding: 0.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-brand {
+            background-color: var(--primary-color);
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .navbar-brand:hover {
+            background-color: var(--primary-dark);
+        }
+        .nav-link {
+            color: var(--text-color) !important;
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.25rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            background-color: var(--primary-light);
+        }
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #F0F8FF 100%);
+            color: var(--text-color);
+            padding: 60px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 24px;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .footer {
+            background-color: var(--primary-light);
+            color: var(--text-color);
+            padding: 30px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+        .stat-card {
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        /* AI助手样式 */
+        .ai-assistant-container {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 350px;
+            height: 500px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-assistant-container.minimized {
+            display: none;
+        }
+        
+        /* 最小化图标样式 */
+        .ai-minimized-icon {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(22, 93, 255, 0.3);
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-minimized-icon:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(22, 93, 255, 0.4);
+        }
+        
+        .ai-minimized-icon.show {
+            display: flex;
+        }
+        
+        /* 高级AI功能面板 */
+        .advanced-ai-panel {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 320px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            z-index: 999;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .advanced-ai-header {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .advanced-ai-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .advanced-ai-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .ai-feature-card {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-feature-card:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .ai-feature-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        
+        .ai-feature-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 6px;
+        }
+        
+        .ai-feature-desc {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+        
+        /* 用户行为分析面板 */
+        .behavior-analytics-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 280px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            z-index: 998;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            transform: translateY(100%);
+        }
+        
+        .behavior-analytics-panel.show {
+            transform: translateY(0);
+        }
+        
+        .behavior-header {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .behavior-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .behavior-body {
+            padding: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .behavior-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .behavior-item:last-child {
+            border-bottom: none;
+        }
+        
+        .behavior-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .behavior-text {
+            flex: 1;
+            font-size: 12px;
+            color: var(--text-color);
+        }
+        
+        .behavior-time {
+            font-size: 10px;
+            color: var(--text-light);
+        }
+        
+        .ai-assistant-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .ai-assistant-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-status-indicator {
+            width: 10px;
+            height: 10px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse-status 2s infinite;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+        }
+        
+        @keyframes pulse-status {
+            0% { 
+                opacity: 1; 
+                transform: scale(1);
+                box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: scale(1.1);
+                box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1);
+                box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+            }
+        }
+        
+        .ai-assistant-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #FAFBFC;
+        }
+        
+        .ai-message {
+            margin-bottom: 16px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            max-width: 85%;
+            word-wrap: break-word;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-message:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .ai-message.user {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 2px 8px rgba(22, 93, 255, 0.2);
+        }
+        
+        .ai-message.assistant {
+            background: white;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .ai-input-container {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            background: white;
+        }
+        
+        .ai-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        
+        .ai-input {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 14px;
+            resize: none;
+            max-height: 80px;
+            min-height: 40px;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .ai-input:disabled {
+            background-color: #f8f9fa;
+            color: var(--text-light);
+            cursor: not-allowed;
+        }
+        
+        .ai-send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .ai-send-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .ai-send-btn:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(22, 93, 255, 0.2);
+        }
+        
+        .ai-send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* 语音控制按钮样式 */
+        .voice-controls {
+            display: flex;
+            gap: 4px;
+            margin-right: 8px;
+        }
+        
+        .voice-btn {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        
+        .voice-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .voice-btn.active {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .voice-btn.recording {
+            background: var(--danger-color);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 重点工作提示面板 */
+        .work-reminder-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .work-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .work-item:last-child {
+            border-bottom: none;
+        }
+        
+        .work-priority {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .work-priority.high {
+            background: var(--danger-color);
+        }
+        
+        .work-priority.medium {
+            background: var(--warning-color);
+        }
+        
+        .work-priority.low {
+            background: var(--success-color);
+        }
+        
+        .work-content {
+            flex: 1;
+        }
+        
+        .work-title {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+        
+        .work-desc {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .work-time {
+            font-size: 12px;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+        
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .ai-assistant-container {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                top: auto;
+                width: 100%;
+                height: 60vh;
+                transform: translateY(100%);
+                border-radius: 20px 20px 0 0;
+                transition: transform 0.3s ease;
+            }
+            
+            .ai-assistant-container.active {
+                transform: translateY(0);
+            }
+            
+            .ai-toggle-btn {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                font-size: 24px;
+                cursor: pointer;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+                z-index: 1001;
+                display: none;
+                transition: all 0.3s ease;
+            }
+            
+            .ai-toggle-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            }
+            
+            .hero-section {
+                padding: 40px 0;
+            }
+            
+            .work-reminder-panel {
+                margin: 16px;
+                padding: 16px;
+            }
+            
+            .ai-thinking {
+                padding: 12px 16px;
+                gap: 10px;
+            }
+            
+            .thinking-icon {
+                width: 20px;
+                height: 20px;
+                border-width: 2px;
+            }
+            
+            .thinking-text {
+                font-size: 13px;
+            }
+            
+            .ai-message {
+                padding: 12px 16px;
+                max-width: 90%;
+            }
+            
+            .ai-input {
+                font-size: 16px; /* 防止iOS缩放 */
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .ai-toggle-btn {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .ai-toggle-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        /* 多行文本省略 */
+        .line-clamp-2 {
+            display: -webkit-box;
+            display: -moz-box;
+            display: box;
+            -webkit-line-clamp: 2;
+            -moz-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            -moz-box-orient: vertical;
+            box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* 加载动画优化 */
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+        
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: loading 1.4s infinite ease-in-out;
+        }
+        
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes loading {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* 进度条动画 */
+        .ai-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            border-radius: 0 0 12px 12px;
+            animation: progress 3s ease-in-out infinite;
+        }
+        
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        
+        /* AI思考状态动画 */
+        .ai-thinking {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            border-bottom-left-radius: 4px;
+            margin-bottom: 16px;
+            max-width: 85%;
+            color: var(--text-light);
+            font-style: italic;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-thinking::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .thinking-icon {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--primary-color);
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            flex-shrink: 0;
+        }
+        
+        .thinking-text {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 打字机效果增强 */
+        .typewriter-text {
+            overflow: hidden;
+            border-right: 2px solid var(--primary-color);
+            white-space: nowrap;
+            animation: blink-caret 1s step-end infinite;
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--primary-color); }
+        }
+        
+        /* 消息淡入动画增强 */
+        .message-fade-in {
+            animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* 发送按钮加载状态增强 */
+        .ai-send-btn.loading {
+            background: var(--primary-color);
+            cursor: not-allowed;
+            animation: pulse-loading 1.5s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-send-btn.loading::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: button-shimmer 1.5s infinite;
+        }
+        
+        @keyframes pulse-loading {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes button-shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">阳光招生平台</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            登录
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="loginDropdown">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">用户名密码登录</a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#phoneLoginModal">手机号验证码登录</a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#wechatLoginModal">微信扫码登录</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="langToggle">EN</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="admission_management.html">项目招生管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">项目学生管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="study_abroad.html">留学申请</a></li>
+                    <li class="nav-item"><a class="nav-link" href="student_evaluation.html">学生评价</a></li>
+                    <li class="nav-item"><a class="nav-link" href="teacher_evaluation.html">教师评价</a></li>
+                    <li class="nav-item"><a class="nav-link" href="college_evaluation.html">院校评价</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html">数据驾驶舱</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">重点工作进度</a></li>
+                    <li class="nav-item"><a class="nav-link" href="academic_management.html">教务管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">迎新系统</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">校友</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4">阳光招生平台</h1>
+            <p class="lead mb-6">公平、公正、公开的英国高等教育文凭项目全流程服务平台</p>
+        </div>
+    </section>
+
+    <!-- AI助手组件 -->
+    <div class="ai-assistant-container" id="aiAssistant">
+        <div class="ai-assistant-header">
+            <h3 class="ai-assistant-title">
+                <i class="fas fa-robot"></i>
+                智能助手
+                <div class="ai-status-indicator"></div>
+            </h3>
+            <button class="btn btn-sm text-white" onclick="minimizeAIAssistant()" style="background: none; border: none;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="ai-assistant-body" id="aiChatBody">
+            <div class="ai-message assistant">
+                <i class="fas fa-robot me-2"></i>
+                您好！我是阳光招生平台的智能助手，可以为您提供以下服务：
+                <br><br>
+                • 项目咨询和政策解答<br>
+                • 招生流程指导<br>
+                • 留学申请建议<br>
+                • 系统使用帮助<br>
+                <br>
+                请问有什么可以帮助您的吗？
+            </div>
+        </div>
+        <div class="ai-input-container">
+            <div class="ai-input-group">
+                <textarea class="ai-input" id="aiInput" placeholder="请输入您的问题..." rows="1"></textarea>
+                <div class="voice-controls">
+                    <button class="voice-btn" id="voiceInputBtn" title="语音输入">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="voice-btn" id="voiceOutputBtn" title="语音播放">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <button class="voice-btn" id="voiceSettingsBtn" title="语音设置">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+                <button class="ai-send-btn" id="aiSendBtn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI助手最小化图标 -->
+    <button class="ai-minimized-icon" id="aiMinimizedIcon" onclick="restoreAIAssistant()">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- 高级AI功能最小化图标 -->
+    <button class="ai-minimized-icon" id="advancedAIMinimizedIcon" onclick="restoreAdvancedAIPanel()" style="left: 20px; right: auto; bottom: 20px;" title="高级AI功能">
+        <i class="fas fa-brain"></i>
+    </button>
+
+    <!-- 高级AI功能面板 -->
+    <div class="advanced-ai-panel" id="advancedAIPanel">
+        <div class="advanced-ai-header">
+            <h3 class="advanced-ai-title">
+                <i class="fas fa-brain"></i>
+                高级AI功能
+            </h3>
+            <button class="btn btn-sm text-white" onclick="minimizeAdvancedAIPanel()" style="background: none; border: none;" title="最小化到任务栏">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="advanced-ai-body">
+            <div class="ai-feature-card" onclick="openLearningPathRecommendation()">
+                <div class="ai-feature-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="ai-feature-title">个性化学习路径推荐</div>
+                <div class="ai-feature-desc">基于学生背景和目标，智能推荐最适合的学习路径和课程安排</div>
+            </div>
+            
+            <div class="ai-feature-card" onclick="openCareerPlanning()">
+                <div class="ai-feature-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="ai-feature-title">职业规划分析工具</div>
+                <div class="ai-feature-desc">分析就业前景，提供个性化职业发展建议和规划方案</div>
+            </div>
+            
+            <div class="ai-feature-card" onclick="openScholarshipMatching()">
+                <div class="ai-feature-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="ai-feature-title">智能奖学金匹配</div>
+                <div class="ai-feature-desc">根据学生条件智能匹配合适的奖学金项目和申请建议</div>
+            </div>
+            
+            <div class="ai-feature-card" onclick="openCulturalAdaptation()">
+                <div class="ai-feature-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="ai-feature-title">跨文化适应评估</div>
+                <div class="ai-feature-desc">评估留学生跨文化适应能力，提供针对性的适应建议</div>
+            </div>
+            
+            <div class="ai-feature-card" onclick="openMultiLanguageTranslation()">
+                <div class="ai-feature-icon">
+                    <i class="fas fa-language"></i>
+                </div>
+                <div class="ai-feature-title">多语言翻译支持</div>
+                <div class="ai-feature-desc">AI驱动的多语言内容翻译，支持中英文等多种语言互译</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户行为分析面板 -->
+    <div class="behavior-analytics-panel" id="behaviorAnalyticsPanel" style="display: none;">
+        <div class="behavior-header">
+            <h3 class="behavior-title">
+                <i class="fas fa-chart-line"></i>
+                用户行为分析
+            </h3>
+            <button class="btn btn-sm text-white" onclick="toggleBehaviorAnalytics()" style="background: none; border: none;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="behavior-body">
+            <div id="behaviorList">
+                <!-- 行为分析数据将动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 移动端AI助手切换按钮 -->
+    <button class="ai-toggle-btn" id="aiToggleBtn" onclick="toggleMobileAI()">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- 系统状态快速访问按钮 -->
+    <button class="system-status-btn" onclick="toggleSystemStatus()" style="position: fixed; bottom: 80px; left: 20px; width: 50px; height: 50px; border-radius: 50%; background: #007bff; color: white; border: none; box-shadow: 0 4px 12px rgba(0,123,255,0.3); z-index: 999; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        <i class="fas fa-cog"></i>
+    </button>
+
+    <!-- 主要内容区 -->
+    <div class="container py-8">
+        <div class="row">
+            <!-- 左侧快速入口 -->
+            <div class="col-md-3">
+                <div class="bg-white border rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="section-title h5 mb-4">快速入口</h3>
+                    <ul class="list-unstyled space-y-2">
+                        <li><a href="admission_management.html" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">项目招生管理</a></li>
+                        <li><a href="#" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">项目学生管理</a></li>
+                        <li><a href="study_abroad.html" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">留学申请系统</a></li>
+                        <li><a href="student_evaluation.html" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">学生评价系统</a></li>
+                        <li><a href="teacher_evaluation.html" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">教师评价系统</a></li>
+                        <li><a href="college_evaluation.html" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">院校评价系统</a></li>
+                        <li><a href="dashboard.html" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">数据驾驶舱</a></li>
+                        <li><a href="#" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">重点工作进度</a></li>
+                        <li><a href="academic_management.html" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">教务管理系统</a></li>
+                        <li><a href="#" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">迎新系统</a></li>
+                        <li><a href="#" class="block py-2 px-3 rounded-lg text-decoration-none text-dark hover:bg-primary-light hover:text-primary transition-all duration-300">校友系统</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 中间横幅 -->
+            <div class="col-md-6">
+                <div class="bg-primary rounded-lg p-8 mb-8 text-center text-white shadow-sm">
+                    <h2 class="text-white mb-4 font-light">欢迎使用阳光招生平台</h2>
+                    <p class="mb-6 max-w-2xl mx-auto opacity-90">一站式英国高等教育文凭项目服务解决方案，提供便捷、高效的项目管理体验</p>
+                    <a href="#" class="btn btn-white text-primary hover:bg-primary/10 transition-all duration-300 py-2 px-6 rounded-full">阳光招生理念</a>
+                </div>
+
+                <!-- 通知公告 -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-8 border border-gray-100 overflow-hidden">
+                    <h3 class="section-title h5 mb-4">通知公告</h3>
+                    <div class="space-y-4">
+                        <a href="#" class="block p-4 rounded-lg bg-white hover:bg-primary-light transition-all duration-300 shadow-sm border border-gray-50">
+                            <div class="mb-2">
+                                <div class="d-flex justify-between items-start">
+                                    <h5 class="font-medium text-gray-800">2025年秋季招生计划公布</h5>
+                                    <small class="text-gray-400 text-sm">2025-06-15</small>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-0">2025年秋季招生计划已公布，请各位考生及时查看。</p>
+                        </a>
+                        <a href="#" class="block p-4 rounded-lg bg-white hover:bg-primary-light transition-all duration-300 shadow-sm border border-gray-50">
+                            <div class="mb-2">
+                                <div class="d-flex justify-between items-start">
+                                    <h5 class="font-medium text-gray-800">关于做好2025年毕业生就业工作的通知</h5>
+                                    <small class="text-gray-400 text-sm">2025-06-10</small>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-0">为做好2025年毕业生就业工作，现将有关事项通知如下。</p>
+                        </a>
+                        <a href="#" class="block p-4 rounded-lg bg-white hover:bg-primary-light transition-all duration-300 shadow-sm border border-gray-50">
+                            <div class="mb-2">
+                                <div class="d-flex justify-between items-start">
+                                    <h5 class="font-medium text-gray-800">2025年暑期放假安排</h5>
+                                    <small class="text-gray-400 text-sm">2025-06-05</small>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-0">2025年暑期放假安排已确定，具体时间及相关要求通知如下。</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 重点工作提示面板 -->
+                <div class="work-reminder-panel">
+                    <h3 class="section-title">
+                        <i class="fas fa-bell me-2"></i>
+                        重点工作提示
+                    </h3>
+                    <div id="workReminders">
+                        <div class="work-item">
+                            <div class="work-priority high"></div>
+                            <div class="work-content">
+                                <div class="work-title">2025年秋季招生计划审核</div>
+                                <div class="work-desc">需要完成招生计划的最终审核和发布</div>
+                            </div>
+                            <div class="work-time">今天截止</div>
+                        </div>
+                        <div class="work-item">
+                            <div class="work-priority medium"></div>
+                            <div class="work-content">
+                                <div class="work-title">留学申请材料审核</div>
+                                <div class="work-desc">待审核申请材料15份</div>
+                            </div>
+                            <div class="work-time">3天内</div>
+                        </div>
+                        <div class="work-item">
+                            <div class="work-priority low"></div>
+                            <div class="work-content">
+                                <div class="work-title">教师评价数据统计</div>
+                                <div class="work-desc">本月教师评价数据汇总分析</div>
+                            </div>
+                            <div class="work-time">本周内</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧功能日历 -->
+            <div class="col-md-3">
+                <div class="bg-white border rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="section-title h5 mb-4">功能日历</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-primary-light rounded-lg text-primary">
+                            <h4 class="font-medium mb-2">8月</h4>
+                            <ul class="list-unstyled text-sm space-y-1">
+                                <li>• 招生计划发布</li>
+                                <li>• 报名系统开放</li>
+                                <li>• 材料审核开始</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-primary-light rounded-lg text-primary">
+                            <h4 class="font-medium mb-2">9月</h4>
+                            <ul class="list-unstyled text-sm space-y-1">
+                                <li>• 录取结果公示</li>
+                                <li>• 新生报到注册</li>
+                                <li>• 迎新系统启动</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-primary-light rounded-lg text-primary">
+                            <h4 class="font-medium mb-2">10月</h4>
+                            <ul class="list-unstyled text-sm space-y-1">
+                                <li>• 教学计划制定</li>
+                                <li>• 校友系统维护</li>
+                                <li>• 招生数据分析</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>© 2025 教育部留学服务中心 版权所有</p>
+            <p>联系电话：010-62677800 | 邮箱：admin@cscse.edu.cn</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>console.log('Bootstrap loaded successfully');</script>
+    <script>
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = this.getAttribute('href');
+                if (target !== '#') {
+                    document.querySelector(target).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+<!-- 用户名密码登录模态框 -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-md rounded-xl overflow-hidden">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="loginModalLabel">用户名密码登录</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-6">
+                <form>
+                    <div class="mb-4">
+                        <label for="username" class="form-label text-light">用户名</label>
+                        <input type="text" class="form-control rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors duration-300" id="username" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-light">密码</label>
+                        <input type="password" class="form-control rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors duration-300" id="password" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input rounded text-primary focus:ring-primary" id="rememberMe">
+                        <label class="form-check-label text-light" for="rememberMe">记住我</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer p-6 pt-0 border-t border-gray-100">
+                <button type="button" class="btn btn-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-300" data-bs-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary hover:bg-primary-dark transition-colors duration-300 px-6 py-2 rounded-lg">登录</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 手机号验证码登录模态框 -->
+<div class="modal fade" id="phoneLoginModal" tabindex="-1" aria-labelledby="phoneLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-md rounded-xl overflow-hidden">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="phoneLoginModalLabel">手机号验证码登录</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-6">
+                <form>
+                    <div class="mb-4">
+                        <label for="phoneNumber" class="form-label text-light">手机号</label>
+                        <input type="tel" class="form-control rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors duration-300" id="phoneNumber" required>
+                    </div>
+                    <div class="mb-4">
+                        <div class="row">
+                            <div class="col-7">
+                                <label for="verifyCode" class="form-label text-light">验证码</label>
+                                <input type="text" class="form-control rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors duration-300" id="verifyCode" required>
+                            </div>
+                            <div class="col-5">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-outline-primary form-control rounded-lg hover:bg-primary/5 transition-colors duration-300" id="sendCodeBtn">获取验证码</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer p-6 pt-0 border-t border-gray-100">
+                <button type="button" class="btn btn-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-300" data-bs-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary hover:bg-primary-dark transition-colors duration-300 px-6 py-2 rounded-lg">登录</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 微信扫码登录模态框 -->
+<div class="modal fade" id="wechatLoginModal" tabindex="-1" aria-labelledby="wechatLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-md rounded-xl overflow-hidden">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="wechatLoginModalLabel">微信扫码登录</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-6 text-center">
+                <div class="wechat-qrcode bg-white p-6 rounded-lg border border-gray-100 shadow-sm" style="width: 220px; height: 220px; margin: 0 auto; display: flex; justify-content: center; align-items: center;">
+                    <div style="color: #07C160; font-size: 1.2rem;">微信扫码区域</div>
+                </div>
+                <p class="mt-4 text-light">请使用微信扫码登录</p>
+            </div>
+            <div class="modal-footer p-6 pt-0 border-t border-gray-100">
+                <button type="button" class="btn btn-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-300 w-100" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // AI助手功能
+    class AIAssistant {
+        constructor() {
+            this.apiKey = 'sk-3cdcf9f01e5141d09060b4b76045edda';
+            this.apiUrl = 'https://api.deepseek.com/v1/chat/completions';
+            this.chatHistory = [];
+            this.isLoading = false;
+            this.init();
+        }
+
+        init() {
+            this.setupEventListeners();
+            this.loadChatHistory();
+            this.setupAutoResize();
+        }
+
+        setupEventListeners() {
+            const input = document.getElementById('aiInput');
+            const sendBtn = document.getElementById('aiSendBtn');
+
+            // 发送按钮点击事件
+            sendBtn.addEventListener('click', () => this.sendMessage());
+
+            // 输入框回车事件
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+
+            // 输入框自动调整高度
+            input.addEventListener('input', () => this.autoResizeTextarea(input));
+        }
+
+        setupAutoResize() {
+            const input = document.getElementById('aiInput');
+            this.autoResizeTextarea(input);
+        }
+
+        autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 80) + 'px';
+        }
+
+        async sendMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+
+            if (!message || this.isLoading) return;
+
+            // 添加用户消息到界面
+            this.addMessage(message, 'user');
+            input.value = '';
+            this.autoResizeTextarea(input);
+
+            // 显示AI思考状态
+            this.showThinkingState();
+            this.setLoading(true);
+
+            try {
+                // 调用DeepSeek API
+                const response = await this.callDeepSeekAPI(message);
+                
+                // 移除思考状态
+                this.hideThinkingState();
+                
+                // 使用打字机效果显示回复
+                await this.addMessageWithTypewriter(response, 'assistant');
+            } catch (error) {
+                console.error('AI API调用失败:', error);
+                this.hideThinkingState();
+                this.addMessage('抱歉，我暂时无法回答您的问题。请稍后再试。', 'assistant');
+            } finally {
+                this.setLoading(false);
+            }
+
+            // 保存聊天记录
+            this.saveChatHistory();
+        }
+
+        async callDeepSeekAPI(message) {
+            // 构建系统提示词
+            const systemPrompt = `你是阳光招生平台的智能助手，专门为英国高等教育文凭项目提供服务。你的主要职责包括：
+
+1. 项目咨询：回答关于HND项目的政策、流程、要求等问题
+2. 招生指导：协助用户了解招生流程、申请材料、录取标准等
+3. 留学建议：提供留学申请相关的建议和指导
+4. 系统帮助：解答平台使用相关的问题
+
+请用专业、友好的语气回答用户问题，提供准确、有用的信息。如果遇到不确定的问题，请建议用户联系相关部门。`;
+
+            // 构建对话历史
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                ...this.chatHistory.slice(-10), // 保留最近10条对话
+                { role: 'user', content: message }
+            ];
+
+            const response = await fetch(this.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 1000
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API请求失败: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        addMessage(content, role) {
+            const chatBody = document.getElementById('aiChatBody');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${role}`;
+
+            if (role === 'assistant') {
+                messageDiv.innerHTML = `<i class="fas fa-robot me-2"></i>${content}`;
+            } else {
+                messageDiv.textContent = content;
+            }
+
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            // 添加到聊天历史
+            this.chatHistory.push({ role, content });
+        }
+
+        showThinkingState() {
+            const chatBody = document.getElementById('aiChatBody');
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'ai-thinking message-fade-in';
+            thinkingDiv.id = 'ai-thinking-indicator';
+            thinkingDiv.innerHTML = `
+                <div class="thinking-icon"></div>
+                <span class="thinking-text">AI正在思考中...</span>
+                <div class="ai-progress-bar"></div>
+            `;
+            
+            chatBody.appendChild(thinkingDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        hideThinkingState() {
+            const thinkingIndicator = document.getElementById('ai-thinking-indicator');
+            if (thinkingIndicator) {
+                thinkingIndicator.remove();
+            }
+        }
+
+        async addMessageWithTypewriter(content, role) {
+            const chatBody = document.getElementById('aiChatBody');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${role} message-fade-in`;
+
+            if (role === 'assistant') {
+                messageDiv.innerHTML = `<i class="fas fa-robot me-2"></i><span class="message-content"></span>`;
+                const contentSpan = messageDiv.querySelector('.message-content');
+                
+                chatBody.appendChild(messageDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+
+                // 打字机效果
+                await this.typewriterEffect(contentSpan, content);
+            } else {
+                messageDiv.textContent = content;
+                chatBody.appendChild(messageDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+
+            // 添加到聊天历史
+            this.chatHistory.push({ role, content });
+        }
+
+        async typewriterEffect(element, text) {
+            element.textContent = '';
+            element.style.borderRight = '2px solid var(--primary-color)';
+            
+            for (let i = 0; i < text.length; i++) {
+                element.textContent += text.charAt(i);
+                await new Promise(resolve => setTimeout(resolve, 30)); // 30ms延迟
+                
+                // 滚动到底部
+                const chatBody = document.getElementById('aiChatBody');
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+            
+            // 移除光标效果
+            setTimeout(() => {
+                element.style.borderRight = 'none';
+            }, 1000);
+        }
+
+        setLoading(loading) {
+            this.isLoading = loading;
+            const sendBtn = document.getElementById('aiSendBtn');
+            const input = document.getElementById('aiInput');
+
+            if (loading) {
+                sendBtn.disabled = true;
+                sendBtn.classList.add('loading');
+                sendBtn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+                input.disabled = true;
+                input.placeholder = 'AI正在回复中...';
+            } else {
+                sendBtn.disabled = false;
+                sendBtn.classList.remove('loading');
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                input.disabled = false;
+                input.placeholder = '请输入您的问题...';
+                input.focus();
+            }
+        }
+
+        saveChatHistory() {
+            try {
+                localStorage.setItem('aiChatHistory', JSON.stringify(this.chatHistory));
+            } catch (error) {
+                console.warn('无法保存聊天记录:', error);
+            }
+        }
+
+        loadChatHistory() {
+            try {
+                const saved = localStorage.getItem('aiChatHistory');
+                if (saved) {
+                    this.chatHistory = JSON.parse(saved);
+                    // 重新显示历史消息（除了欢迎消息）
+                    const chatBody = document.getElementById('aiChatBody');
+                    const welcomeMessage = chatBody.querySelector('.ai-message.assistant');
+                    
+                    this.chatHistory.forEach(msg => {
+                        if (msg.content !== welcomeMessage.textContent.trim()) {
+                            this.addMessageToUI(msg.content, msg.role);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.warn('无法加载聊天记录:', error);
+            }
+        }
+
+        addMessageToUI(content, role) {
+            const chatBody = document.getElementById('aiChatBody');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${role}`;
+
+            if (role === 'assistant') {
+                messageDiv.innerHTML = `<i class="fas fa-robot me-2"></i>${content}`;
+            } else {
+                messageDiv.textContent = content;
+            }
+
+            chatBody.appendChild(messageDiv);
+        }
+
+        // 添加fetchAIResponse方法以支持外部调用
+        async fetchAIResponse(message) {
+            try {
+                // 添加用户消息到界面
+                this.addMessage(message, 'user');
+                
+                // 显示AI思考状态
+                this.showThinkingState();
+                this.setLoading(true);
+
+                // 调用DeepSeek API
+                const response = await this.callDeepSeekAPI(message);
+                
+                // 移除思考状态
+                this.hideThinkingState();
+                
+                // 使用打字机效果显示回复
+                await this.addMessageWithTypewriter(response, 'assistant');
+                
+                // 保存聊天记录
+                this.saveChatHistory();
+                
+                return response;
+            } catch (error) {
+                console.error('AI API调用失败:', error);
+                this.hideThinkingState();
+                this.addMessage('抱歉，我暂时无法回答您的问题。请稍后再试。', 'assistant');
+                throw error;
+            } finally {
+                this.setLoading(false);
+            }
+        }
+    }
+
+    // AI助手控制函数
+    function toggleAIAssistant() {
+        const assistant = document.getElementById('aiAssistant');
+        const minimizedIcon = document.getElementById('aiMinimizedIcon');
+        
+        if (assistant.classList.contains('minimized')) {
+            // 恢复显示
+            assistant.classList.remove('minimized');
+            minimizedIcon.classList.remove('show');
+            // 保存状态到localStorage
+            localStorage.setItem('aiAssistantMinimized', 'false');
+        } else {
+            // 最小化
+            assistant.classList.add('minimized');
+            minimizedIcon.classList.add('show');
+            // 保存状态到localStorage
+            localStorage.setItem('aiAssistantMinimized', 'true');
+        }
+    }
+    
+    function minimizeAIAssistant() {
+        const assistant = document.getElementById('aiAssistant');
+        const minimizedIcon = document.getElementById('aiMinimizedIcon');
+        
+        assistant.classList.add('minimized');
+        minimizedIcon.classList.add('show');
+        // 保存状态到localStorage
+        localStorage.setItem('aiAssistantMinimized', 'true');
+    }
+    
+    function restoreAIAssistant() {
+        const assistant = document.getElementById('aiAssistant');
+        const minimizedIcon = document.getElementById('aiMinimizedIcon');
+        
+        assistant.classList.remove('minimized');
+        minimizedIcon.classList.remove('show');
+        // 保存状态到localStorage
+        localStorage.setItem('aiAssistantMinimized', 'false');
+    }
+
+    // 高级AI功能面板最小化/恢复
+    function minimizeAdvancedAIPanel() {
+        const panel = document.getElementById('advancedAIPanel');
+        const minimizedIcon = document.getElementById('advancedAIMinimizedIcon');
+        // 将面板最小化至任务栏图标
+        panel.style.display = 'none';
+        if (minimizedIcon) minimizedIcon.classList.add('show');
+        // 保存状态
+        localStorage.setItem('advancedAIPanelMinimized', 'true');
+        localStorage.setItem('advancedAIPanelVisible', 'false');
+    }
+
+    function restoreAdvancedAIPanel() {
+        const panel = document.getElementById('advancedAIPanel');
+        const minimizedIcon = document.getElementById('advancedAIMinimizedIcon');
+        // 恢复面板显示
+        panel.style.display = 'block';
+        if (minimizedIcon) minimizedIcon.classList.remove('show');
+        // 保存状态
+        localStorage.setItem('advancedAIPanelMinimized', 'false');
+        localStorage.setItem('advancedAIPanelVisible', 'true');
+    }
+
+    function toggleMobileAI() {
+        const assistant = document.getElementById('aiAssistant');
+        const toggleBtn = document.getElementById('aiToggleBtn');
+        
+        assistant.classList.toggle('active');
+        
+        if (assistant.classList.contains('active')) {
+            toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
+        } else {
+            toggleBtn.innerHTML = '<i class="fas fa-robot"></i>';
+        }
+    }
+
+    // 全局发送消息函数（供HTML调用）
+    function sendMessage() {
+        if (window.aiAssistant) {
+            window.aiAssistant.sendMessage();
+        }
+    }
+
+    // 重点工作提示功能
+    function initWorkReminders() {
+        // 模拟从服务器获取工作提示数据
+        const workData = [
+            {
+                title: '2025年秋季招生计划审核',
+                desc: '需要完成招生计划的最终审核和发布',
+                priority: 'high',
+                deadline: '今天截止'
+            },
+            {
+                title: '留学申请材料审核',
+                desc: '待审核申请材料15份',
+                priority: 'medium',
+                deadline: '3天内'
+            },
+            {
+                title: '教师评价数据统计',
+                desc: '本月教师评价数据汇总分析',
+                priority: 'low',
+                deadline: '本周内'
+            }
+        ];
+
+        // 根据用户角色和权限动态生成工作提示
+        updateWorkReminders(workData);
+    }
+
+    function updateWorkReminders(workData) {
+        const container = document.getElementById('workReminders');
+        container.innerHTML = '';
+
+        workData.forEach(work => {
+            const workItem = document.createElement('div');
+            workItem.className = 'work-item';
+            workItem.innerHTML = `
+                <div class="work-priority ${work.priority}"></div>
+                <div class="work-content">
+                    <div class="work-title">${work.title}</div>
+                    <div class="work-desc">${work.desc}</div>
+                </div>
+                <div class="work-time">${work.deadline}</div>
+            `;
+            container.appendChild(workItem);
+        });
+    }
+
+    // 中英文切换功能
+    function initLangToggle() {
+        console.log('Initializing language toggle');
+        const langToggle = document.getElementById('langToggle');
+        if (!langToggle) {
+            console.error('langToggle element not found');
+            return;
+        }
+        document.getElementById('langToggle').addEventListener('click', function() {
+            const currentLang = this.textContent;
+            if (currentLang === 'EN') {
+                this.textContent = '中文';
+                // 这里可以添加英文切换逻辑
+            } else {
+                this.textContent = 'EN';
+                // 这里可以添加中文切换逻辑
+            }
+        });
+    }
+
+    // 验证码倒计时功能
+    function initSendCodeBtn() {
+        console.log('Initializing send code button');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        if (!sendCodeBtn) {
+            console.error('sendCodeBtn element not found');
+            return;
+        }
+        if (sendCodeBtn) {
+            sendCodeBtn.addEventListener('click', function() {
+                let countdown = 60;
+                const originalText = this.textContent;
+                this.disabled = true;
+                this.textContent = `重新发送(${countdown}s)`;
+
+                // 模拟发送验证码
+                console.log('发送验证码到手机: ' + document.getElementById('phoneNumber').value);
+
+                const timer = setInterval(() => {
+                    countdown--;
+                    this.textContent = `重新发送(${countdown}s)`;
+
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        this.disabled = false;
+                        this.textContent = originalText;
+                    }
+                }, 1000);
+            });
+        }
+    }
+
+    // 用户名密码登录功能
+    function initLoginModal() {
+        console.log('Initializing login modal');
+        const loginBtn = document.querySelector('#loginModal .btn-primary');
+        if (!loginBtn) {
+            console.error('login button not found');
+            return;
+        }
+        if (loginBtn) {
+            loginBtn.addEventListener('click', function() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (!username || !password) {
+                    alert('请输入用户名和密码');
+                    return;
+                }
+
+                // 模拟登录验证
+                console.log('用户名密码登录: ' + username + ' / ' + password);
+
+                // 这里应该发送AJAX请求到服务器进行验证
+                // 模拟登录成功
+                alert('登录成功！欢迎 ' + username);
+                document.querySelector('#loginModal .btn-close').click();
+            });
+        }
+    }
+
+    // 手机号验证码登录功能
+    function initPhoneLoginModal() {
+        console.log('Initializing phone login modal');
+        const phoneLoginBtn = document.querySelector('#phoneLoginModal .btn-primary');
+        if (!phoneLoginBtn) {
+            console.error('phone login button not found');
+            return;
+        }
+        if (phoneLoginBtn) {
+            phoneLoginBtn.addEventListener('click', function() {
+                const phoneNumber = document.getElementById('phoneNumber').value;
+                const verifyCode = document.getElementById('verifyCode').value;
+
+                if (!phoneNumber || !verifyCode) {
+                    alert('请输入手机号和验证码');
+                    return;
+                }
+
+                // 模拟登录验证
+                console.log('手机号验证码登录: ' + phoneNumber + ' / ' + verifyCode);
+
+                // 这里应该发送AJAX请求到服务器进行验证
+                // 模拟登录成功
+                alert('登录成功！欢迎 ' + phoneNumber);
+                document.querySelector('#phoneLoginModal .btn-close').click();
+            });
+        }
+    }
+
+    // 微信扫码登录模拟
+    function initWechatLoginModal() {
+        console.log('Initializing wechat login modal');
+        const wechatQrCode = document.querySelector('.wechat-qrcode');
+        if (!wechatQrCode) {
+            console.error('wechat qr code element not found');
+            return;
+        }
+        if (wechatQrCode) {
+            // 模拟生成二维码
+            wechatQrCode.innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://example.com/login/wechat" alt="微信登录二维码" style="width: 150px; height: 150px;">';
+        }
+    }
+
+    // 高级AI功能面板切换
+    function toggleAdvancedAI() {
+        const panel = document.getElementById('advancedAIPanel');
+        const isVisible = panel.style.display !== 'none';
+        panel.style.display = isVisible ? 'none' : 'block';
+        
+        // 保存面板状态
+        localStorage.setItem('advancedAIPanelVisible', !isVisible);
+    }
+
+    // 用户行为分析面板切换
+    function toggleBehaviorAnalytics() {
+        const panel = document.getElementById('behaviorAnalyticsPanel');
+        const isVisible = panel.style.display !== 'none';
+        panel.style.display = isVisible ? 'none' : 'block';
+        
+        // 保存面板状态
+        localStorage.setItem('behaviorAnalyticsPanelVisible', !isVisible);
+    }
+
+    // 高级AI功能实现
+    function openPersonalizedLearning() {
+        if (window.aiAssistant) {
+            const message = "请为我制定个性化学习路径推荐。我希望了解基于我的学习背景和目标的最佳学习方案，包括课程选择、时间安排和学习重点。";
+            window.aiAssistant.addMessage(message, 'user');
+            window.aiAssistant.fetchAIResponse(message);
+        }
+    }
+
+    function openCareerPlanning() {
+        if (window.aiAssistant) {
+            const message = "请帮我进行职业规划分析。我想了解不同专业的就业前景、职业发展路径、薪资水平和行业趋势，帮助我做出更好的专业选择。";
+            window.aiAssistant.addMessage(message, 'user');
+            window.aiAssistant.fetchAIResponse(message);
+        }
+    }
+
+    function openScholarshipMatching() {
+        if (window.aiAssistant) {
+            const message = "请帮我匹配合适的奖学金项目。根据我的学术成绩、专业背景、经济状况和个人特长，推荐最适合的奖学金申请机会。";
+            window.aiAssistant.addMessage(message, 'user');
+            window.aiAssistant.fetchAIResponse(message);
+        }
+    }
+
+    function openCulturalAdaptation() {
+        if (window.aiAssistant) {
+            const message = "请对我的跨文化适应能力进行评估。我计划出国留学，希望了解自己在语言能力、文化理解、社交适应等方面的准备情况，并获得改进建议。";
+            window.aiAssistant.addMessage(message, 'user');
+            window.aiAssistant.fetchAIResponse(message);
+        }
+    }
+
+    function openMultiLanguageTranslation() {
+        if (window.aiAssistant) {
+            const message = "请提供多语言翻译支持服务。我需要翻译学术文档、申请材料或其他重要文件，请帮我进行准确的多语言翻译。";
+            window.aiAssistant.addMessage(message, 'user');
+            window.aiAssistant.fetchAIResponse(message);
+        }
+    }
+
+    // 用户行为分析类
+    class BehaviorAnalytics {
+        constructor() {
+            this.behaviors = JSON.parse(localStorage.getItem('userBehaviors') || '[]');
+            this.maxBehaviors = 20; // 只保留最近20条行为记录
+            this.init();
+        }
+
+        init() {
+            this.trackPageView();
+            this.trackClicks();
+            this.trackAIInteractions();
+            this.updateUI();
+        }
+
+        trackPageView() {
+            this.addBehavior('page_view', {
+                page: window.location.pathname,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent.substring(0, 100)
+            });
+        }
+
+        trackClicks() {
+            document.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.classList.contains('clickable')) {
+                    this.addBehavior('click', {
+                        element: e.target.tagName,
+                        text: e.target.textContent.substring(0, 50),
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+        }
+
+        trackAIInteractions() {
+            // 监听AI交互
+            const originalFetchAIResponse = window.aiAssistant?.fetchAIResponse;
+            if (originalFetchAIResponse) {
+                window.aiAssistant.fetchAIResponse = (message) => {
+                    this.addBehavior('ai_interaction', {
+                        messageLength: message.length,
+                        timestamp: new Date().toISOString(),
+                        type: 'user_message'
+                    });
+                    return originalFetchAIResponse.call(window.aiAssistant, message);
+                };
+            }
+        }
+
+        addBehavior(type, data) {
+            this.behaviors.unshift({ type, data });
+            
+            // 只保留最近的行为记录
+            if (this.behaviors.length > this.maxBehaviors) {
+                this.behaviors = this.behaviors.slice(0, this.maxBehaviors);
+            }
+            
+            // 保存到localStorage
+            localStorage.setItem('userBehaviors', JSON.stringify(this.behaviors));
+            this.updateUI();
+        }
+
+        updateUI() {
+            const container = document.getElementById('behaviorList');
+            if (!container) return;
+
+            container.innerHTML = '';
+            
+            this.behaviors.slice(0, 5).forEach(behavior => {
+                const item = document.createElement('div');
+                item.className = 'behavior-item';
+                
+                const time = new Date(behavior.data.timestamp).toLocaleTimeString();
+                let description = '';
+                
+                switch (behavior.type) {
+                    case 'page_view':
+                        description = `访问页面: ${behavior.data.page}`;
+                        break;
+                    case 'click':
+                        description = `点击: ${behavior.data.text}`;
+                        break;
+                    case 'ai_interaction':
+                        description = `AI交互: ${behavior.data.messageLength}字符`;
+                        break;
+                    default:
+                        description = behavior.type;
+                }
+                
+                item.innerHTML = `
+                    <div class="behavior-time">${time}</div>
+                    <div class="behavior-desc">${description}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        getAnalytics() {
+            const analytics = {
+                totalBehaviors: this.behaviors.length,
+                pageViews: this.behaviors.filter(b => b.type === 'page_view').length,
+                clicks: this.behaviors.filter(b => b.type === 'click').length,
+                aiInteractions: this.behaviors.filter(b => b.type === 'ai_interaction').length,
+                lastActivity: this.behaviors[0]?.data.timestamp
+            };
+            return analytics;
+        }
+    }
+
+    // 系统集成管理器
+    class SystemIntegrationManager {
+        constructor() {
+            this.dataManager = new UnifiedDataManager();
+            this.recommendationSystem = new IntelligentRecommendationSystem();
+            this.performanceOptimizer = new SystemPerformanceOptimizer();
+            this.init();
+        }
+
+        init() {
+            this.setupGlobalEventListeners();
+            this.createSystemStatusUI();
+            this.startPerformanceMonitoring();
+        }
+
+        setupGlobalEventListeners() {
+            // 监听页面切换
+            window.addEventListener('hashchange', () => {
+                this.dataManager.recordBehavior('page_navigation', {
+                    from: this.dataManager.getCurrentPage(),
+                    to: window.location.hash,
+                    timestamp: new Date().toISOString()
+                });
+            });
+
+            // 监听AI交互
+            document.addEventListener('ai-interaction', (e) => {
+                this.dataManager.recordBehavior('ai_interaction', e.detail);
+                this.recommendationSystem.updateRecommendations();
+            });
+        }
+
+        createSystemStatusUI() {
+            const statusPanel = document.createElement('div');
+            statusPanel.id = 'systemStatusPanel';
+            statusPanel.className = 'system-status-panel';
+            statusPanel.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                width: 300px;
+                background: rgba(255, 255, 255, 0.95);
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 15px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                z-index: 1000;
+                display: none;
+                font-size: 12px;
+            `;
+
+            statusPanel.innerHTML = `
+                <div class="status-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h6 style="margin: 0; color: #333;">系统状态</h6>
+                    <button onclick="toggleSystemStatus()" style="border: none; background: none; font-size: 16px; cursor: pointer;">&times;</button>
+                </div>
+                <div id="systemStatusContent">
+                    <div class="status-item">
+                        <span>页面加载时间: </span>
+                        <span id="loadTime">--</span>
+                    </div>
+                    <div class="status-item">
+                        <span>内存使用: </span>
+                        <span id="memoryUsage">--</span>
+                    </div>
+                    <div class="status-item">
+                        <span>用户行为记录: </span>
+                        <span id="behaviorCount">--</span>
+                    </div>
+                    <div class="status-item">
+                        <span>智能推荐: </span>
+                        <button onclick="showRecommendations()" style="padding: 2px 8px; font-size: 11px;">查看</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(statusPanel);
+        }
+
+        startPerformanceMonitoring() {
+            setInterval(() => {
+                this.updateSystemStatus();
+            }, 5000);
+        }
+
+        updateSystemStatus() {
+            const loadTimeEl = document.getElementById('loadTime');
+            const memoryUsageEl = document.getElementById('memoryUsage');
+            const behaviorCountEl = document.getElementById('behaviorCount');
+
+            if (loadTimeEl) {
+                loadTimeEl.textContent = this.performanceOptimizer.getLoadTime() + 'ms';
+            }
+            if (memoryUsageEl) {
+                memoryUsageEl.textContent = this.performanceOptimizer.getMemoryUsage() + 'MB';
+            }
+            if (behaviorCountEl) {
+                behaviorCountEl.textContent = this.dataManager.getBehaviorCount();
+            }
+        }
+    }
+
+    // 统一数据管理器
+    class UnifiedDataManager {
+        constructor() {
+            this.userProfile = this.loadUserProfile();
+            this.behaviors = JSON.parse(localStorage.getItem('unifiedBehaviors') || '[]');
+            this.crossModuleData = JSON.parse(localStorage.getItem('crossModuleData') || '{}');
+        }
+
+        loadUserProfile() {
+            return JSON.parse(localStorage.getItem('userProfile') || JSON.stringify({
+                id: 'user_' + Date.now(),
+                preferences: {},
+                learningHistory: [],
+                interactionPatterns: {},
+                lastActivity: new Date().toISOString()
+            }));
+        }
+
+        updateUserProfile(updates) {
+            this.userProfile = { ...this.userProfile, ...updates };
+            localStorage.setItem('userProfile', JSON.stringify(this.userProfile));
+        }
+
+        recordBehavior(type, data) {
+            const behavior = {
+                id: 'behavior_' + Date.now(),
+                type,
+                data,
+                timestamp: new Date().toISOString(),
+                userId: this.userProfile.id
+            };
+
+            this.behaviors.unshift(behavior);
+            if (this.behaviors.length > 100) {
+                this.behaviors = this.behaviors.slice(0, 100);
+            }
+
+            localStorage.setItem('unifiedBehaviors', JSON.stringify(this.behaviors));
+            this.updateUserProfile({ lastActivity: behavior.timestamp });
+        }
+
+        getBehaviorCount() {
+            return this.behaviors.length;
+        }
+
+        getCurrentPage() {
+            return window.location.pathname + window.location.hash;
+        }
+
+        shareDataBetweenModules(moduleId, data) {
+            this.crossModuleData[moduleId] = {
+                ...this.crossModuleData[moduleId],
+                ...data,
+                lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem('crossModuleData', JSON.stringify(this.crossModuleData));
+        }
+
+        getModuleData(moduleId) {
+            return this.crossModuleData[moduleId] || {};
+        }
+    }
+
+    // 智能推荐系统
+    class IntelligentRecommendationSystem {
+        constructor() {
+            this.recommendations = [];
+            this.apiKey = 'sk-3cdcf9f01e5141d09060b4b76045edda';
+        }
+
+        async updateRecommendations() {
+            try {
+                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                const behaviors = JSON.parse(localStorage.getItem('unifiedBehaviors') || '[]');
+                
+                const prompt = `基于用户画像和行为数据，生成3个个性化推荐：
+                用户画像: ${JSON.stringify(userProfile).substring(0, 500)}
+                最近行为: ${JSON.stringify(behaviors.slice(0, 5)).substring(0, 500)}
+                
+                请返回JSON格式的推荐列表，每个推荐包含title、description、action字段。`;
+
+                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 1000,
+                        temperature: 0.7
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const content = data.choices[0].message.content;
+                    
+                    try {
+                        this.recommendations = JSON.parse(content);
+                    } catch (e) {
+                        // 如果解析失败，创建默认推荐
+                        this.recommendations = [
+                            { title: '个性化学习路径', description: '基于您的学习历史推荐', action: 'openPersonalizedLearning()' },
+                            { title: '职业规划建议', description: '根据您的兴趣和能力推荐', action: 'openCareerPlanning()' },
+                            { title: '奖学金匹配', description: '为您匹配合适的奖学金项目', action: 'openScholarshipMatching()' }
+                        ];
+                    }
+                }
+            } catch (error) {
+                console.error('更新推荐失败:', error);
+            }
+        }
+
+        getRecommendations() {
+            return this.recommendations;
+        }
+    }
+
+    // 系统性能优化器
+    class SystemPerformanceOptimizer {
+        constructor() {
+            this.loadStartTime = performance.now();
+            this.memoryUsage = 0;
+            this.domElementCount = 0;
+            this.init();
+        }
+
+        init() {
+            this.monitorPerformance();
+            this.optimizeDOM();
+        }
+
+        monitorPerformance() {
+            // 监控页面加载时间
+            window.addEventListener('load', () => {
+                this.loadTime = performance.now() - this.loadStartTime;
+            });
+
+            // 监控内存使用（如果支持）
+            if (performance.memory) {
+                setInterval(() => {
+                    this.memoryUsage = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                }, 10000);
+            }
+
+            // 监控DOM元素数量
+            setInterval(() => {
+                this.domElementCount = document.querySelectorAll('*').length;
+            }, 5000);
+        }
+
+        optimizeDOM() {
+            // 清理无用的DOM元素
+            const observer = new MutationObserver(() => {
+                const unusedElements = document.querySelectorAll('[data-unused="true"]');
+                unusedElements.forEach(el => el.remove());
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+
+        getLoadTime() {
+            return Math.round(this.loadTime || 0);
+        }
+
+        getMemoryUsage() {
+            return this.memoryUsage;
+        }
+
+        getDOMElementCount() {
+            return this.domElementCount;
+        }
+    }
+
+    // 全局函数
+    function toggleSystemStatus() {
+        const panel = document.getElementById('systemStatusPanel');
+        const isVisible = panel.style.display !== 'none';
+        panel.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function showRecommendations() {
+        if (window.systemIntegration) {
+            const recommendations = window.systemIntegration.recommendationSystem.getRecommendations();
+            let message = '基于您的使用情况，我为您推荐以下内容：\n\n';
+            
+            recommendations.forEach((rec, index) => {
+                message += `${index + 1}. ${rec.title}\n${rec.description}\n\n`;
+            });
+
+            if (window.aiAssistant) {
+                window.aiAssistant.addMessage(message, 'assistant');
+            } else {
+                alert(message);
+            }
+        }
+    }
+
+    // 初始化所有功能
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM content loaded, initializing all functions');
+        
+        // 初始化AI助手
+        window.aiAssistant = new AIAssistant();
+        
+        // 初始化用户行为分析
+        window.behaviorAnalytics = new BehaviorAnalytics();
+        
+        // 初始化系统集成
+        window.systemIntegration = new SystemIntegrationManager();
+        
+        // 初始化重点工作提示
+        initWorkReminders();
+        
+        // 恢复面板状态
+        const advancedAIPanelVisible = localStorage.getItem('advancedAIPanelVisible') === 'true';
+        const behaviorAnalyticsPanelVisible = localStorage.getItem('behaviorAnalyticsPanelVisible') === 'true';
+        const advancedAIPanelMinimized = localStorage.getItem('advancedAIPanelMinimized') === 'true';
+        
+        if (advancedAIPanelMinimized) {
+            const minimizedIcon = document.getElementById('advancedAIMinimizedIcon');
+            document.getElementById('advancedAIPanel').style.display = 'none';
+            if (minimizedIcon) minimizedIcon.classList.add('show');
+        } else if (advancedAIPanelVisible) {
+            document.getElementById('advancedAIPanel').style.display = 'block';
+        }
+        if (behaviorAnalyticsPanelVisible) {
+            document.getElementById('behaviorAnalyticsPanel').style.display = 'block';
+        }
+        
+        // 初始化原有功能
+        initLangToggle();
+        initSendCodeBtn();
+        initLoginModal();
+        initPhoneLoginModal();
+        initWechatLoginModal();
+        
+        // 初始化语音交互功能
+        if (typeof VoiceInteractionManager !== 'undefined') {
+            window.voiceManager = new VoiceInteractionManager();
+            
+            // 绑定语音按钮事件
+            const voiceInputBtn = document.getElementById('voiceInputBtn');
+            const voiceOutputBtn = document.getElementById('voiceOutputBtn');
+            const voiceSettingsBtn = document.getElementById('voiceSettingsBtn');
+            
+            if (voiceInputBtn) {
+                voiceInputBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (window.voiceManager.isListening) {
+                        window.voiceManager.stopListening();
+                        voiceInputBtn.classList.remove('active');
+                        voiceInputBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                        voiceInputBtn.title = '语音输入';
+                    } else {
+                        window.voiceManager.startListening();
+                        voiceInputBtn.classList.add('active');
+                        voiceInputBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                        voiceInputBtn.title = '停止录音';
+                    }
+                });
+            }
+            
+            if (voiceOutputBtn) {
+                voiceOutputBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (window.voiceManager.isSpeaking) {
+                        window.voiceManager.stopSpeaking();
+                        voiceOutputBtn.classList.remove('active');
+                        voiceOutputBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                        voiceOutputBtn.title = '语音播放';
+                    } else {
+                        const lastMessage = document.querySelector('#aiChatBody .ai-message.assistant:last-child');
+                        if (lastMessage) {
+                            const text = lastMessage.textContent.trim();
+                            window.voiceManager.speak(text);
+                            voiceOutputBtn.classList.add('active');
+                            voiceOutputBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                            voiceOutputBtn.title = '停止播放';
+                        } else {
+                            // 如果没有消息，播放欢迎语
+                            window.voiceManager.speak('您好！我是阳光招生平台的智能助手，有什么可以帮助您的吗？');
+                        }
+                    }
+                });
+            }
+            
+            if (voiceSettingsBtn) {
+                voiceSettingsBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    window.voiceManager.showVoiceSettings();
+                });
+            }
+            
+            // 监听语音状态变化
+            document.addEventListener('voiceStatusChanged', (event) => {
+                const { status } = event.detail;
+                const voiceInputBtn = document.getElementById('voiceInputBtn');
+                const voiceOutputBtn = document.getElementById('voiceOutputBtn');
+                
+                if (status === 'listening') {
+                    if (voiceInputBtn) {
+                        voiceInputBtn.classList.add('active');
+                        voiceInputBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                        voiceInputBtn.title = '停止录音';
+                    }
+                } else if (status === 'idle') {
+                    if (voiceInputBtn) {
+                        voiceInputBtn.classList.remove('active');
+                        voiceInputBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                        voiceInputBtn.title = '语音输入';
+                    }
+                    if (voiceOutputBtn) {
+                        voiceOutputBtn.classList.remove('active');
+                        voiceOutputBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                        voiceOutputBtn.title = '语音播放';
+                    }
+                }
+            });
+        }
+        
+        // 恢复AI助手状态
+        const isMinimized = localStorage.getItem('aiAssistantMinimized') === 'true';
+        if (isMinimized) {
+            minimizeAIAssistant();
+        }
+        
+        console.log('All functions initialized including AI assistant, behavior analytics, system integration, and voice interaction');
+    });
+</script>
+
+<!-- 引入语音交互和数据导出功能 -->
+<script src="js/voice-interaction.js"></script>
+<script src="js/data-export.js"></script>
+
+</body>
+</html>

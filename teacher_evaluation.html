@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师评价管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #3b82f6;
+            --accent-color: #93c5fd;
+            --light-color: #f8fafc;
+            --dark-color: #0f172a;
+        }
+        .bg-primary-custom {
+            background-color: var(--primary-color);
+        }
+        .text-primary-custom {
+            color: var(--primary-color);
+        }
+        .nav-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar {
+            height: 100%;
+            min-height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+        .tab-content {
+            min-height: 400px;
+        }
+        
+        /* AI助手样式 */
+        .ai-assistant-container {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ai-assistant-hidden {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        
+        .ai-assistant-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-assistant-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+        
+        .ai-message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+        
+        .ai-message.user {
+            background: var(--primary-color);
+            color: white;
+            margin-left: auto;
+        }
+        
+        .ai-message.assistant {
+            background: white;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .ai-input-area {
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ai-input {
+            flex: 1;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            padding: 8px 15px;
+            outline: none;
+        }
+        
+        .ai-send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .ai-toggle-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 999;
+        }
+        
+        /* AI思考状态样式 */
+        .ai-thinking {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid #dee2e6;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thinking-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .thinking-text {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .ai-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), #1e6bb8, var(--primary-color));
+            background-size: 200% 100%;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes progress {
+            0% { width: 0%; background-position: 200% 0; }
+            50% { width: 100%; background-position: -200% 0; }
+            100% { width: 0%; background-position: 200% 0; }
+        }
+
+        /* 消息淡入动画 */
+        .message-fade-in {
+            animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 打字机效果 */
+        .typewriter-text {
+            animation: blink-caret 1s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            0%, 50% { border-right: 2px solid var(--primary-color); }
+            51%, 100% { border-right: 2px solid transparent; }
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            90%, 100% { content: ''; }
+        }
+        
+        .analysis-panel {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .insight-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .teacher-stats {
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 左侧导航 -->
+            <div class="col-md-2 bg-primary-custom text-white sidebar">
+                <div class="p-4">
+                    <h3 class="text-center mb-4">教师评价系统</h3>
+                    <div class="nav flex-column">
+                        <div class="nav-item active" data-target="teacher-info">教师信息管理</div>
+                        <div class="nav-item" data-target="teacher-type">教师类型管理</div>
+                        <div class="nav-item" data-target="personal-info">个人信息管理</div>
+                        <div class="nav-item" data-target="contact-info">通讯信息管理</div>
+                        <div class="nav-item" data-target="teaching-info">授课信息管理</div>
+                        <div class="nav-item" data-target="student-evaluation">学生评价管理</div>
+                        <a href="college_evaluation.html" class="nav-item">院校评价管理</a>
+                        <div class="nav-item" data-target="course-audit">课程内外审评价</div>
+                        <div class="nav-item" data-target="ai-analysis">AI智能分析</div>
+                        <div class="nav-item" data-target="teaching-quality">教学质量评估</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="col-md-10 p-4">
+                <h1 class="mb-4 text-primary-custom">教师评价管理</h1>
+
+                <!-- 教师信息管理 -->
+                <div id="teacher-info" class="tab-content active">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">教师信息管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择院校</label>
+                                        <select class="form-select">
+                                            <option>中国石油大学(北京)</option>
+                                            <option>北京邮电大学</option>
+                                            <option>首都师范大学</option>
+                                            <option>对外经济贸易大学</option>
+                                            <option>上海立信会计金融学院</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择院系</label>
+                                        <select class="form-select">
+                                            <option>经济管理学院</option>
+                                            <option>计算机学院</option>
+                                            <option>外国语学院</option>
+                                            <option>数学学院</option>
+                                            <option>物理学院</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">教师类型</label>
+                                        <select class="form-select">
+                                            <option>全部</option>
+                                            <option>在编教师</option>
+                                            <option>校内全职</option>
+                                            <option>校内兼职</option>
+                                            <option>外聘兼职</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询教师</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>教师编号</th>
+                                            <th>姓名</th>
+                                            <th>性别</th>
+                                            <th>年龄</th>
+                                            <th>职称</th>
+                                            <th>所属院系</th>
+                                            <th>教师类型</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>T0001</td>
+                                            <td>张教授</td>
+                                            <td>男</td>
+                                            <td>45</td>
+                                            <td>教授</td>
+                                            <td>经济管理学院</td>
+                                            <td>在编教师</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>T0002</td>
+                                            <td>李副教授</td>
+                                            <td>女</td>
+                                            <td>38</td>
+                                            <td>副教授</td>
+                                            <td>计算机学院</td>
+                                            <td>校内全职</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>T0003</td>
+                                            <td>王讲师</td>
+                                            <td>男</td>
+                                            <td>32</td>
+                                            <td>讲师</td>
+                                            <td>外国语学院</td>
+                                            <td>校内兼职</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>T0004</td>
+                                            <td>赵老师</td>
+                                            <td>女</td>
+                                            <td>42</td>
+                                            <td>高级工程师</td>
+                                            <td>计算机学院</td>
+                                            <td>外聘兼职</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">添加教师</button>
+                                <button class="btn btn-secondary ms-2">导出教师列表</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 教师类型管理 -->
+                <div id="teacher-type" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">教师类型管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>类型编号</th>
+                                            <th>类型名称</th>
+                                            <th>类型描述</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>TT001</td>
+                                            <td>在编教师</td>
+                                            <td>学校正式编制的教师</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>TT002</td>
+                                            <td>校内全职</td>
+                                            <td>学校全职聘用的教师</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>TT003</td>
+                                            <td>校内兼职</td>
+                                            <td>学校内部其他岗位兼职教师</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>TT004</td>
+                                            <td>外聘兼职</td>
+                                            <td>从校外聘请的兼职教师</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">添加教师类型</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 个人信息管理 -->
+                <div id="personal-info" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">教师个人信息管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">教师编号</label>
+                                        <input type="text" class="form-control" value="T0001" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" class="form-control" value="张教授">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">性别</label>
+                                        <select class="form-select">
+                                            <option>男</option>
+                                            <option>女</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">出生日期</label>
+                                        <input type="date" class="form-control" value="1979-05-15">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">职称</label>
+                                        <input type="text" class="form-control" value="教授">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">所属院系</label>
+                                        <input type="text" class="form-control" value="经济管理学院">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">教师类型</label>
+                                        <input type="text" class="form-control" value="在编教师" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">入职日期</label>
+                                        <input type="date" class="form-control" value="2005-09-01">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">学历背景</label>
+                                        <textarea class="form-control" rows="3">北京大学经济学博士</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">工作经历</label>
+                                        <textarea class="form-control" rows="3">2005-至今 中国石油大学(北京)经济管理学院教师</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">保存修改</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 通讯信息管理 -->
+                <div id="contact-info" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">教师通讯信息管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">教师编号</label>
+                                        <input type="text" class="form-control" value="T0001" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" class="form-control" value="张教授" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">办公电话</label>
+                                        <input type="text" class="form-control" value="010-12345678">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">移动电话</label>
+                                        <input type="text" class="form-control" value="13800138000">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">电子邮箱</label>
+                                        <input type="email" class="form-control" value="zhang@example.com">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">办公地址</label>
+                                        <input type="text" class="form-control" value="教学1号楼 501室">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">邮编</label>
+                                        <input type="text" class="form-control" value="100000">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">保存修改</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 授课信息管理 -->
+                <div id="teaching-info" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">教师授课信息管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">教师编号</label>
+                                        <input type="text" class="form-control" value="T0001" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" class="form-control" value="张教授" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择学期</label>
+                                        <select class="form-select">
+                                            <option>2024-2025学年第1学期</option>
+                                            <option>2024-2025学年第2学期</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询授课信息</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>课程代码</th>
+                                            <th>课程名称</th>
+                                            <th>授课班级</th>
+                                            <th>学分</th>
+                                            <th>学时</th>
+                                            <th>上课时间</th>
+                                            <th>上课地点</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>BUS101</td>
+                                            <td>管理学原理</td>
+                                            <td>国际贸易与商务2024-1班</td>
+                                            <td>3</td>
+                                            <td>48</td>
+                                            <td>周一 1-2节</td>
+                                            <td>教学1号楼 301</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>BUS201</td>
+                                            <td>国际贸易实务</td>
+                                            <td>国际贸易与商务2023-1班</td>
+                                            <td>3</td>
+                                            <td>48</td>
+                                            <td>周三 1-2节</td>
+                                            <td>教学1号楼 302</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">添加授课信息</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学生评价管理 -->
+                <div id="student-evaluation" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">学生评价管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">教师编号</label>
+                                        <input type="text" class="form-control" value="T0001" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" class="form-control" value="张教授" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择学期</label>
+                                        <select class="form-select">
+                                            <option>2024-2025学年第1学期</option>
+                                            <option>2024-2025学年第2学期</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询评价</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>课程名称</th>
+                                            <th>评价人数</th>
+                                            <th>平均评分</th>
+                                            <th>教学态度</th>
+                                            <th>教学方法</th>
+                                            <th>教学内容</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>管理学原理</td>
+                                            <td>40</td>
+                                            <td>4.8</td>
+                                            <td>4.9</td>
+                                            <td>4.7</td>
+                                            <td>4.8</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>国际贸易实务</td>
+                                            <td>35</td>
+                                            <td>4.7</td>
+                                            <td>4.8</td>
+                                            <td>4.6</td>
+                                            <td>4.7</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 院校评价管理 -->
+                <div id="college-evaluation" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">院校评价管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">教师编号</label>
+                                        <input type="text" class="form-control" value="T0001" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" class="form-control" value="张教授" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">评价年度</label>
+                                        <select class="form-select">
+                                            <option>2024年</option>
+                                            <option>2023年</option>
+                                            <option>2022年</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询评价</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>评价年度</th>
+                                            <th>教学评价</th>
+                                            <th>科研评价</th>
+                                            <th>综合评价</th>
+                                            <th>评价等级</th>
+                                            <th>评价意见</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2024年</td>
+                                            <td>4.8</td>
+                                            <td>4.9</td>
+                                            <td>4.85</td>
+                                            <td>优秀</td>
+                                            <td>教学科研表现突出，学生评价高</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">添加院校评价</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 课程内外审评价 -->
+                <div id="course-audit" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">课程内外审评价</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">教师编号</label>
+                                        <input type="text" class="form-control" value="T0001" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" class="form-control" value="张教授" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择课程</label>
+                                        <select class="form-select">
+                                            <option>管理学原理</option>
+                                            <option>国际贸易实务</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询评价</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>课程名称</th>
+                                            <th>评价类型</th>
+                                            <th>评价时间</th>
+                                            <th>评价分数</th>
+                                            <th>评价等级</th>
+                                            <th>评价意见</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>管理学原理</td>
+                                            <td>内部评审</td>
+                                            <td>2024-09-15</td>
+                                            <td>95</td>
+                                            <td>优秀</td>
+                                            <td>课程设计合理，教学资料齐全</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>管理学原理</td>
+                                            <td>外部评审</td>
+                                            <td>2024-09-20</td>
+                                            <td>93</td>
+                                            <td>优秀</td>
+                                            <td>教学方法先进，学生参与度高</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">添加评价</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI智能分析 -->
+                <div id="ai-analysis" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">AI智能分析</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="analysis-panel">
+                                <h5><i class="fas fa-brain text-primary"></i> 教师综合表现分析</h5>
+                                <div class="teacher-stats">
+                                    <div class="row">
+                                        <div class="col-md-3 text-center">
+                                            <h3>4.8</h3>
+                                            <p>综合评分</p>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h3>95%</h3>
+                                            <p>学生满意度</p>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h3>优秀</h3>
+                                            <p>教学等级</p>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h3>12</h3>
+                                            <p>授课门数</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="insight-card">
+                                        <h6><i class="fas fa-chart-line text-success"></i> 优势分析</h6>
+                                        <ul>
+                                            <li>教学态度认真负责，深受学生喜爱</li>
+                                            <li>专业知识扎实，能够深入浅出地讲解复杂概念</li>
+                                            <li>课堂互动性强，学生参与度高</li>
+                                            <li>作业批改及时，反馈详细</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="insight-card">
+                                        <h6><i class="fas fa-lightbulb text-warning"></i> 改进建议</h6>
+                                        <ul>
+                                            <li>可以增加更多实践案例分析</li>
+                                            <li>建议采用更多元化的教学方法</li>
+                                            <li>可以加强与学生的课后交流</li>
+                                            <li>适当增加课堂讨论环节</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="insight-card">
+                                <h6><i class="fas fa-trending-up text-info"></i> 发展趋势预测</h6>
+                                <p>基于历史数据分析，该教师在教学质量方面呈现稳步上升趋势。预计在未来一年内，综合评分有望提升至4.9分以上。建议重点关注教学方法创新和学生互动质量的提升。</p>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">生成详细报告</button>
+                                <button class="btn btn-secondary ms-2">导出分析结果</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 教学质量评估 -->
+                <div id="teaching-quality" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">教学质量AI评估</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择教师</label>
+                                        <select class="form-select">
+                                            <option>张教授</option>
+                                            <option>李副教授</option>
+                                            <option>王讲师</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">评估维度</label>
+                                        <select class="form-select">
+                                            <option>综合评估</option>
+                                            <option>教学态度</option>
+                                            <option>教学方法</option>
+                                            <option>教学效果</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">时间范围</label>
+                                        <select class="form-select">
+                                            <option>本学期</option>
+                                            <option>近一年</option>
+                                            <option>近三年</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100" onclick="startAIEvaluation()">开始AI评估</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="evaluation-results" class="d-none">
+                                <div class="analysis-panel">
+                                    <h5><i class="fas fa-robot text-primary"></i> AI评估结果</h5>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <canvas id="qualityChart" width="400" height="200"></canvas>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="insight-card">
+                                                <h6>评估摘要</h6>
+                                                <div class="mb-2">
+                                                    <strong>综合得分：</strong>
+                                                    <span class="badge bg-success">4.8/5.0</span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <strong>排名：</strong>
+                                                    <span class="text-primary">院系前10%</span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <strong>改进空间：</strong>
+                                                    <span class="text-warning">中等</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="insight-card">
+                                    <h6><i class="fas fa-comments text-info"></i> AI智能建议</h6>
+                                    <div class="alert alert-info">
+                                        <strong>个性化改进方案：</strong><br>
+                                        1. 建议在《管理学原理》课程中增加更多企业实战案例<br>
+                                        2. 可以尝试翻转课堂教学模式，提高学生参与度<br>
+                                        3. 建议定期组织学生座谈会，收集教学反馈<br>
+                                        4. 可以考虑引入在线教学工具，丰富教学手段
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI助手 -->
+    <button class="ai-toggle-btn" onclick="toggleAIAssistant()">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <div class="ai-assistant-container ai-assistant-hidden" id="aiAssistant">
+        <div class="ai-assistant-header">
+            <div>
+                <i class="fas fa-robot me-2"></i>
+                <strong>AI教学助手</strong>
+            </div>
+            <button class="btn btn-sm" onclick="toggleAIAssistant()" style="color: white;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="ai-assistant-body" id="aiChatBody">
+            <div class="ai-message assistant">
+                <strong>AI助手：</strong><br>
+                您好！我是您的AI教学助手。我可以帮您：<br>
+                • 分析教师教学数据<br>
+                • 提供教学改进建议<br>
+                • 解答教学管理问题<br>
+                • 生成教学质量报告<br><br>
+                请问有什么可以帮助您的吗？
+            </div>
+        </div>
+        <div class="ai-input-area">
+            <input type="text" class="ai-input" id="aiInput" placeholder="请输入您的问题..." onkeypress="handleAIKeyPress(event)">
+            <button class="ai-send-btn" onclick="sendAIMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 导航切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保DOM加载完成后再执行
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有active类
+                    document.querySelectorAll('.nav-item').forEach(navItem => {
+                        navItem.classList.remove('active');
+                    });
+                    document.querySelectorAll('.tab-content').forEach(tab => {
+                        tab.classList.add('d-none');
+                        tab.classList.remove('active');
+                    });
+
+                    // 添加active类到当前点击项
+                    this.classList.add('active');
+                    const target = this.getAttribute('data-target');
+                    const targetTab = document.getElementById(target);
+                    if (targetTab) {
+                        targetTab.classList.remove('d-none');
+                        targetTab.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // 模拟数据加载
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('教师评价系统已加载完成');
+        });
+
+        // AI助手功能
+        let aiAssistantVisible = false;
+
+        function toggleAIAssistant() {
+            const assistant = document.getElementById('aiAssistant');
+            const toggleBtn = document.querySelector('.ai-toggle-btn');
+            
+            if (aiAssistantVisible) {
+                assistant.classList.add('ai-assistant-hidden');
+                toggleBtn.style.display = 'block';
+                aiAssistantVisible = false;
+            } else {
+                assistant.classList.remove('ai-assistant-hidden');
+                toggleBtn.style.display = 'none';
+                aiAssistantVisible = true;
+            }
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addAIMessage(message, 'user');
+                input.value = '';
+                
+                // 显示加载状态
+                addAIMessage('正在思考中<span class="loading-dots"></span>', 'assistant', true);
+                
+                // 模拟AI回复
+                setTimeout(() => {
+                    removeLoadingMessage();
+                    const response = generateAIResponse(message);
+                    addAIMessage(response, 'assistant');
+                }, 1500);
+            }
+        }
+
+        function handleAIKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+
+        function addAIMessage(message, sender, isLoading = false) {
+            const chatBody = document.getElementById('aiChatBody');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender} message-fade-in`;
+            
+            if (isLoading) {
+                messageDiv.id = 'loading-message';
+                messageDiv.className = 'ai-thinking message-fade-in';
+                messageDiv.innerHTML = `
+                    <div class="thinking-icon"></div>
+                    <span class="thinking-text">AI正在思考中...</span>
+                    <div class="ai-progress-bar"></div>
+                `;
+            } else {
+                if (sender === 'user') {
+                    messageDiv.innerHTML = `<strong>您：</strong><br>${message}`;
+                } else {
+                    messageDiv.innerHTML = `<strong>AI助手：</strong><br><span class="typewriter-text">${message}</span>`;
+                }
+            }
+            
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function removeLoadingMessage() {
+            const loadingMsg = document.getElementById('loading-message');
+            if (loadingMsg) {
+                loadingMsg.remove();
+            }
+        }
+
+        function generateAIResponse(message) {
+            const responses = {
+                '教师评价': '根据我的分析，当前教师整体评价良好。张教授的综合评分为4.8分，在院系中排名前10%。主要优势在于教学态度认真、专业知识扎实。建议可以在教学方法创新方面进一步提升。',
+                '教学质量': '教学质量分析显示，本学期教师平均评分为4.6分。其中教学态度得分最高(4.8分)，教学方法有待改进(4.3分)。建议加强互动式教学和案例教学的应用。',
+                '数据分析': '基于大数据分析，我发现以下趋势：1)学生评价呈上升趋势 2)实践类课程评分普遍较高 3)年轻教师在教学创新方面表现突出。建议重点关注传统教学方法的改进。',
+                '改进建议': '针对当前教学情况，我建议：1)增加课堂互动环节 2)引入更多实际案例 3)采用多元化评价方式 4)定期收集学生反馈 5)开展教师培训活动。'
+            };
+            
+            // 简单的关键词匹配
+            for (let key in responses) {
+                if (message.includes(key)) {
+                    return responses[key];
+                }
+            }
+            
+            // 默认回复
+            return '感谢您的提问！我正在分析相关数据。基于当前的教学数据，我建议您可以查看具体的教师评价报告，或者告诉我您想了解哪个方面的具体信息，比如教师评价、教学质量、数据分析等。';
+        }
+
+        // AI评估功能
+        function startAIEvaluation() {
+            const resultsDiv = document.getElementById('evaluation-results');
+            resultsDiv.classList.remove('d-none');
+            
+            // 模拟加载过程
+            setTimeout(() => {
+                drawQualityChart();
+            }, 1000);
+        }
+
+        function drawQualityChart() {
+            const canvas = document.getElementById('qualityChart');
+            const ctx = canvas.getContext('2d');
+            
+            // 简单的柱状图绘制
+            const data = [4.8, 4.6, 4.9, 4.7, 4.5];
+            const labels = ['教学态度', '教学方法', '教学内容', '教学效果', '综合评价'];
+            const colors = ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe'];
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const barWidth = 60;
+            const barSpacing = 20;
+            const maxHeight = 150;
+            
+            for (let i = 0; i < data.length; i++) {
+                const barHeight = (data[i] / 5) * maxHeight;
+                const x = i * (barWidth + barSpacing) + 20;
+                const y = canvas.height - barHeight - 30;
+                
+                // 绘制柱子
+                ctx.fillStyle = colors[i];
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // 绘制数值
+                ctx.fillStyle = '#000';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(data[i].toString(), x + barWidth/2, y - 5);
+                
+                // 绘制标签
+                ctx.fillText(labels[i], x + barWidth/2, canvas.height - 10);
+            }
+        }
+    </script>
+</body>
+</html>

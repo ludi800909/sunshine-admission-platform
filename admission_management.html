@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目招生管理 - 阳光招生平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<script>window.addEventListener('DOMContentLoaded', function() { if(typeof Chart !== 'undefined') { initCharts(); } });
+function initCharts() {
+    // 申请数量图表
+    const applicationCtx = document.getElementById('applicationChart').getContext('2d');
+    const applicationChart = new Chart(applicationCtx, {
+        type: 'bar',
+        data: {
+            labels: ['计算机类', '电子信息类', '机械类', '医学类', '经济类', '管理类'],
+            datasets: [{
+                label: '申请数量',
+                data: [1200, 950, 780, 1100, 1500, 890],
+                backgroundColor: '#0f52ba',
+                borderColor: '#0f52ba',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}</script>
+    <style>
+        :root {
+            --primary-color: #0f52ba;
+            --primary-light: #e6f0ff;
+            --secondary-color: #f8fafc;
+            --text-color: #333;
+            --border-color: #ddd;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            color: var(--text-color);
+            background-color: #fff;
+        }
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            background-color: var(--primary-color);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+        .nav-link {
+            color: var(--text-color) !important;
+        }
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            background-color: var(--primary-light);
+        }
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        .footer {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            padding: 20px 0;
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        .badge-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        .process-step {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+        }
+        .process-step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+        }
+        .process-step::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 17px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background-color: var(--primary-light);
+        }
+        .process-step:last-child::after {
+            display: none;
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+        }
+        .video-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            height: 300px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        /* AI招生助手样式 */
+        .ai-assistant-container {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .ai-assistant-header {
+            background: linear-gradient(135deg, var(--primary-color), #1e6bb8);
+            color: white;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-assistant-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-message {
+            margin-bottom: 16px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            max-width: 85%;
+            word-wrap: break-word;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .ai-message:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .ai-message.user {
+            background: linear-gradient(135deg, var(--primary-color), #1e6bb8);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 2px 8px rgba(15, 82, 186, 0.3);
+        }
+
+        .ai-message.assistant {
+            background: #f8f9fa;
+            color: #333;
+            align-self: flex-start;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .ai-input-area {
+            padding: 15px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 8px;
+        }
+
+        .ai-input {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 15px;
+            outline: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 82, 186, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .ai-input:disabled {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .ai-send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-send-btn:not(:disabled):hover {
+            background: #0d47a1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 82, 186, 0.3);
+        }
+
+        .ai-send-btn:not(:disabled):active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(15, 82, 186, 0.3);
+        }
+
+        .ai-send-btn.loading {
+            background: var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-send-btn.loading::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: button-shimmer 1.5s infinite;
+        }
+
+        @keyframes button-shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .ai-toggle-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(15, 82, 186, 0.3);
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .ai-toggle-btn:hover {
+            background: #0d47a1;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(15, 82, 186, 0.4);
+        }
+
+        .ai-assistant-hidden {
+            transform: translateY(-50%) translateX(100%);
+            opacity: 0;
+        }
+
+        /* AI思考状态样式 */
+        .ai-thinking {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid #dee2e6;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thinking-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .thinking-text {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .ai-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), #1e6bb8, var(--primary-color));
+            background-size: 200% 100%;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes progress {
+            0% { width: 0%; background-position: 200% 0; }
+            50% { width: 100%; background-position: -200% 0; }
+            100% { width: 0%; background-position: 200% 0; }
+        }
+
+        /* 消息淡入动画 */
+        .message-fade-in {
+            animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 打字机效果 */
+        .typewriter-text {
+            animation: blink-caret 1s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            0%, 50% { border-right: 2px solid var(--primary-color); }
+            51%, 100% { border-right: 2px solid transparent; }
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            margin: 0 2px;
+            animation: loading-dots 1.4s infinite ease-in-out;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes loading-dots {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 申请材料审核面板 */
+        .application-review-panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .review-item {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ai-analysis-badge {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .score-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .score-high { background: #d4edda; color: #155724; }
+        .score-medium { background: #fff3cd; color: #856404; }
+        .score-low { background: #f8d7da; color: #721c24; }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .ai-assistant-container {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                top: auto;
+                transform: none;
+                width: 100%;
+                height: 60vh;
+                border-radius: 20px 20px 0 0;
+                transition: transform 0.3s ease;
+            }
+
+            .ai-assistant-hidden {
+                transform: translateY(100%);
+            }
+
+            .ai-toggle-btn {
+                right: 20px;
+                bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">阳光招生平台</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="admission_management.html">项目招生管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">项目学生管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">留学申请系统</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">学生评价系统</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">教师评价系统</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">院校评价系统</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html">数据驾驶舱</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">重点工作进度</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">教务管理系统</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">迎新系统</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">校友系统</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <div class="container py-6">
+        <h1 class="display-5 mb-2">项目招生管理</h1>
+        <p class="text-muted"></p>
+    </div>
+
+    <!-- 主要内容区 -->
+    <div class="container py-4">
+        <div class="row">
+            <!-- 左侧功能菜单 -->
+            <div class="col-md-3">
+                <div class="bg-white border rounded-lg shadow-sm p-4 mb-6">
+                    <h3 class="section-title h5 mb-4">功能菜单</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#recruitment-info" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">📋</span> 招生简章</a></li>
+                        <li class="mb-2"><a href="#college-search" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">🏫</span> 院校查询</a></li>
+                        <li class="mb-2"><a href="#major-search" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">📚</span> 专业查询</a></li>
+                        <li class="mb-2"><a href="#subject-reference" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">🔍</span> 选科参考</a></li>
+                        <li class="mb-2"><a href="#application" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">📝</span> 志愿填报</a></li>
+                        <li class="mb-2"><a href="#process-status" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">⏱️</span> 招录进程状态</a></li>
+                        <li class="mb-2"><a href="#application-warning" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">⚠️</span> 申请预警</a></li>
+                        <li class="mb-2"><a href="#admission-results" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">🎓</span> 录取结果</a></li>
+                        <li class="mb-2"><a href="#tuition" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">💰</span> 学费缴纳</a></li>
+                        <li class="mb-2"><a href="#online-consultation" class="d-flex align-items-center text-decoration-none text-dark hover:text-primary"><span class="feature-icon me-2" style="font-size: 1.2rem;">💬</span> 在线咨询室</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 右侧主要内容 -->
+            <div class="col-md-9">
+                <!-- 招生简章 -->
+                <div id="recruitment-info" class="card mb-6">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0">招生简章</h2>
+                        <button class="btn btn-sm btn-outline-primary" onclick="exportAdmissionData('recruitment-info')" title="导出招生简章">
+                            <i class="fas fa-download"></i> 导出
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-3">
+                                <div class="border rounded-lg p-3 h-100">
+                                    <h3 class="h6 mb-2 text-primary">2025年中央财经大学招生章程</h3>
+                                    <p class="text-sm text-muted mb-3">发布时间: 2025-03-15</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="border rounded-lg p-3 h-100">
+                                    <h3 class="h6 mb-2 text-primary">2025年中国海洋大学招生章程</h3>
+                                    <p class="text-sm text-muted mb-3">发布时间: 2025-02-20</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="border rounded-lg p-3 h-100">
+                                    <h3 class="h6 mb-2 text-primary">2025年厦门大学招生章程</h3>
+                                    <p class="text-sm text-muted mb-3">发布时间: 2025-01-10</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <a href="#" class="text-primary">查看更多招生简章 <i class="bi bi-chevron-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 院校查询 -->
+                <div id="college-search" class="card mb-6">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0">合作院校</h2>
+                        <button class="btn btn-sm btn-outline-primary" onclick="exportAdmissionData('college-list')" title="导出院校信息">
+                            <i class="fas fa-download"></i> 导出
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="输入院校名称">
+                                <button class="btn btn-primary" type="button">搜索</button>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">中国石油大学(北京)</h3>
+                                    <p class="text-xs text-muted mb-2">北京</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">北京邮电大学</h3>
+                                    <p class="text-xs text-muted mb-2">北京</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">首都师范大学</h3>
+                                    <p class="text-xs text-muted mb-2">北京</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">对外经济贸易大学</h3>
+                                    <p class="text-xs text-muted mb-2">北京</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">上海立信会计金融学院</h3>
+                                    <p class="text-xs text-muted mb-2">上海</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">北京交通大学</h3>
+                                    <p class="text-xs text-muted mb-2">北京</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">华南师范大学</h3>
+                                    <p class="text-xs text-muted mb-2">广州</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">华东师范大学</h3>
+                                    <p class="text-xs text-muted mb-2">上海</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">北京第二外国语学院</h3>
+                                    <p class="text-xs text-muted mb-2">北京</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">广东财经大学</h3>
+                                    <p class="text-xs text-muted mb-2">广州</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">上海外国语大学贤达经济人文学院</h3>
+                                    <p class="text-xs text-muted mb-2">上海</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 text-center">
+                                <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                    <div class="mb-3 mx-auto" style="width: 80px; height: 80px; background-color: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 2rem;">🏫</span>
+                                    </div>
+                                    <h3 class="h6 mb-1 text-primary">中央财经大学</h3>
+                                    <p class="text-xs text-muted mb-2">北京</p>
+                                    <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <a href="#" class="text-primary">查看更多院校 <i class="bi bi-chevron-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 专业查询 -->
+                <div id="major-search" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">专业查询</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <ul class="nav nav-tabs mb-3" id="majorTypeTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="business-tab" data-bs-toggle="tab" data-bs-target="#business" type="button" role="tab" aria-controls="business" aria-selected="true">商科类</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="computer-tab" data-bs-toggle="tab" data-bs-target="#computer" type="button" role="tab" aria-controls="computer" aria-selected="false">计算机类</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="majorTypeTabsContent">
+                                <!-- 商科类专业 -->
+                                <div class="tab-pane fade show active" id="business" role="tabpanel" aria-labelledby="business-tab">
+                                    <div class="input-group mb-4">
+                                        <input type="text" class="form-control" placeholder="输入商科专业名称">
+                                        <button class="btn btn-primary" type="button">搜索</button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">🌐</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">国际贸易与商务</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">💻</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">商务信息技术</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">📈</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">市场营销</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">💹</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">商务会计</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">📊</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">商务管理</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">🗂️</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">行政与信息管理</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 计算机类专业 -->
+                                <div class="tab-pane fade" id="computer" role="tabpanel" aria-labelledby="computer-tab">
+                                    <div class="input-group mb-4">
+                                        <input type="text" class="form-control" placeholder="输入计算机专业名称">
+                                        <button class="btn btn-primary" type="button">搜索</button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">💻</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">计算机网络技术</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">📱</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">计算机软件开发</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">🌐</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary">计算机技术支持</h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-4 text-center">
+                                            <div class="border rounded-lg overflow-hidden h-100 p-3">
+                                                <div class="mb-3 mx-auto" style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="font-size: 1.5rem;">🤖</span>
+                                                </div>
+                                                <h3 class="h6 mb-1 text-primary"></h3>
+                                                <p class="text-xs text-muted mb-2"></p>
+                                                <a href="#" class="btn btn-sm btn-primary w-100">查看详情</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 选科参考 -->
+                <div id="subject-reference" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">选科参考（对接国外院校专业）</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="border rounded-lg p-4 h-100">
+                                    <h3 class="h6 mb-3 text-primary">国内选科要求</h3>
+                                    <div class="mb-3">
+                                        <label class="form-label">选择专业类别</label>
+                                        <select class="form-select">
+                                            <option>计算机类</option>
+                                            <option>电子信息类</option>
+                                            <option>机械类</option>
+                                            <option>医学类</option>
+                                            <option>经济类</option>
+                                        </select>
+                                    </div>
+                                  
+                                    <button class="btn btn-primary w-100">查询匹配专业</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="border rounded-lg p-4 h-100">
+                                    <h3 class="h6 mb-3 text-primary">国外院校专业对接</h3>
+                                    <div class="mb-3">
+                                        <label class="form-label">选择国家/地区</label>
+                                        <select class="form-select">
+                                            <option>美国</option>
+                                            <option>英国</option>
+                                            <option>澳大利亚</option>
+                                            <option>加拿大</option>
+                                            <option>新加坡</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">选择国内专业</label>
+                                        <select class="form-select">
+                                            <option>计算机科学与技术</option>
+                                            <option>电子信息工程</option>
+                                            <option>工商管理</option>
+                                            <option>市场营销</option>
+                                            <option>会计学</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary w-100">查询对接专业</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 志愿填报 -->
+                <div id="application" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">志愿填报</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4 p-3 bg-primary-light rounded-lg">
+                            <p class="text-sm text-primary mb-0"><i class="bi bi-info-circle"></i> 当前处于2025年志愿填报阶段，请在规定时间内完成填报。</p>
+                        </div>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>志愿序号</th>
+                                        <th>院校名称</th>
+                                        <th>专业名称</th>
+                                        <th>是否服从调剂</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>中央财经大学</td>
+                                        <td>国际贸易与商务</td>
+                                        <td>是</td>
+                                        <td><a href="#" class="text-primary">修改</a> | <a href="#" class="text-danger">删除</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>厦门大学</td>
+                                        <td>国际理财</td>
+                                        <td>是</td>
+                                        <td><a href="#" class="text-primary">修改</a> | <a href="#" class="text-danger">删除</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>上海财经大学</td>
+                                        <td>人力资源管理</td>
+                                        <td>是</td>
+                                        <td><a href="#" class="text-primary">修改</a> | <a href="#" class="text-danger">删除</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5"><button class="btn btn-sm btn-primary w-100" onclick="addVolunteer()">添加志愿</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-primary me-2">保存志愿</button>
+                            <button class="btn btn-success">提交志愿</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 添加志愿模态框 -->
+                <div class="modal fade" id="addVolunteerModal" tabindex="-1" aria-labelledby="addVolunteerModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addVolunteerModalLabel">添加志愿</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="volunteerForm">
+                                    <div class="mb-3">
+                                        <label for="collegeSelect" class="form-label">选择院校</label>
+                                        <select class="form-select" id="collegeSelect" required>
+                                            <option value="">请选择院校</option>
+                                            <option value="0">青岛理工大学</option>
+                                            <option value="1">北京交通大学</option>
+                                            <option value="2">上海财经大学</option>
+                                            <option value="3">厦门大学</option>
+                                            <option value="4">西安外国语大学</option>
+                                            <option value="5">中国海洋大学</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="majorSelect" class="form-label">选择专业</label>
+                                        <select class="form-select" id="majorSelect" required>
+                                            <option value="">请选择专业</option>
+                                            <option value="0">计算机科学与技术</option>
+                                            <option value="1">电子信息工程</option>
+                                            <option value="2">工商管理</option>
+                                            <option value="3">市场营销</option>
+                                            <option value="4">会计学</option>
+                                            <option value="5">人力资源管理</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="adjustmentCheck">
+                                            <label class="form-check-label" for="adjustmentCheck">
+                                                服从调剂
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="button" class="btn btn-primary" onclick="confirmAddVolunteer()">确认添加</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 招录进程状态 -->
+                <div id="process-status" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">招录进程状态</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h3 class="h6 mb-3">2025年招生进程</h3>
+                            <div class="process-step">
+                                <h4 class="h6 mb-1">1. 招生简章发布</h4>
+                                <p class="text-sm text-muted mb-1">时间: 2025-03-15</p>
+                                <span class="badge badge-success">已完成</span>
+                            </div>
+                            <div class="process-step">
+                                <h4 class="h6 mb-1">2. 网上报名</h4>
+                                <p class="text-sm text-muted mb-1">时间: 2025-04-01 至 2025-04-15</p>
+                                <span class="badge badge-success">已完成</span>
+                            </div>
+                            <div class="process-step">
+                                <h4 class="h6 mb-1">3. 资格审核</h4>
+                                <p class="text-sm text-muted mb-1">时间: 2025-04-16 至 2025-04-30</p>
+                                <span class="badge badge-success">已完成</span>
+                            </div>
+                            <div class="process-step">
+                                <h4 class="h6 mb-1">4. 志愿填报</h4>
+                                <p class="text-sm text-muted mb-1">时间: 2025-05-01 至 2025-05-15</p>
+                                <span class="badge badge-primary">进行中</span>
+                            </div>
+                            <div class="process-step">
+                                <h4 class="h6 mb-1">5. 录取结果公布</h4>
+                                <p class="text-sm text-muted mb-1">时间: 2025-06-15</p>
+                                <span class="badge badge-secondary">未开始</span>
+                            </div>
+                            <div class="process-step">
+                                <h4 class="h6 mb-1">6. 新生报到</h4>
+                                <p class="text-sm text-muted mb-1">时间: 2025-09-01</p>
+                                <span class="badge badge-secondary">未开始</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 申请预警 -->
+                <div id="application-warning" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">申请数量及申请积压数量预警</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h3 class="h6 mb-3">申请数量统计</h3>
+                            <div class="canvas-container" style="height: 300px;">
+                                <canvas id="applicationChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <h3 class="h6 mb-3">申请积压预警</h3>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>院校名称</th>
+                                            <th>专业名称</th>
+                                            <th>申请数量</th>
+                                            <th>处理进度</th>
+                                            <th>预警状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>中国海洋大学</td>
+                                            <td>计算机科学与技术</td>
+                                            <td>1200</td>
+                                            <td>60%</td>
+                                            <td><span class="badge badge-warning">黄色预警</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>北京交通大学</td>
+                                            <td>工商管理</td>
+                                            <td>1500</td>
+                                            <td>40%</td>
+                                            <td><span class="badge badge-danger">红色预警</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>上海财经大学</td>
+                                            <td>电子信息工程</td>
+                                            <td>900</td>
+                                            <td>75%</td>
+                                            <td><span class="badge badge-success">正常</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 录取结果 -->
+                <div id="admission-results" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">录取结果</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4 p-3 bg-primary-light rounded-lg">
+                            <p class="text-sm text-primary mb-0"><i class="bi bi-info-circle"></i> 2025年英国高等教育文凭项目录取结果预计于2025-10-00公布，请耐心等待。</p>
+                        </div>
+                        <div class="text-center p-6">
+                            <div class="mb-4" style="font-size: 3rem;">🎓</div>
+                            <h3 class="h5 mb-2">录取结果暂未公布</h3>
+                            <p class="text-muted mb-4">请在公布时间后查询您的录取结果</p>
+                            <button class="btn btn-primary">查询录取结果</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学费缴纳 -->
+                <div id="tuition" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">学费缴纳</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4 p-3 bg-primary-light rounded-lg">
+                            <p class="text-sm text-primary mb-0"><i class="bi bi-info-circle"></i> 2025级新生学费缴纳通道尚未开启，请在录取结果公布后进行缴纳。</p>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="border rounded-lg p-4 h-100">
+                                    <h3 class="h6 mb-3 text-primary">学费标准查询</h3>
+                                    <div class="mb-3">
+                                        <label class="form-label">选择院校</label>
+                                        <select class="form-select">
+                                            <option>青岛理工大学</option>
+                                            <option>北京交通大学</option>
+                                            <option>上海财经大学</option>
+                                            <option>厦门大学</option>
+                                            <option>西安外国语大学大学</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">选择专业</label>
+                                        <select class="form-select">
+                                            <option>计算机科学与技术</option>
+                                            <option>电子信息工程</option>
+                                            <option>工商管理</option>
+                                            <option>市场营销</option>
+                                            <option>会计学</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary w-100">查询学费</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="border rounded-lg p-4 h-100">
+                                    <h3 class="h6 mb-3 text-primary">在线缴费</h3>
+                                    <div class="mb-3">
+                                        <label class="form-label">考生号</label>
+                                        <input type="text" class="form-control" placeholder="请输入考生号">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">身份证号</label>
+                                        <input type="text" class="form-control" placeholder="请输入身份证号">
+                                    </div>
+                                    <button class="btn btn-primary w-100">查询并缴费</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI智能申请材料审核面板 -->
+                <div id="ai-review-panel" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">AI智能申请材料审核 <span class="ai-analysis-badge">AI赋能</span></h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="application-review-panel">
+                            <h5 class="mb-3">待审核申请材料</h5>
+                            
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-1">张三 - 计算机科学与技术专业申请</h6>
+                                    <span class="score-indicator score-high">AI评分: 92分</span>
+                                </div>
+                                <p class="text-muted mb-2">申请编号: 2025001 | 申请时间: 2025-01-15</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>AI分析结果:</strong>
+                                        <ul class="mt-2">
+                                            <li>✅ 高考成绩优异 (数学145分, 英语138分)</li>
+                                            <li>✅ 个人陈述逻辑清晰, 目标明确</li>
+                                            <li>✅ 推荐信来源权威, 内容详实</li>
+                                            <li>⚠️ 建议补充相关实践经历证明</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>推荐操作:</strong>
+                                        <div class="mt-2">
+                                            <button class="btn btn-success btn-sm me-2">通过审核</button>
+                                            <button class="btn btn-warning btn-sm me-2">要求补充材料</button>
+                                            <button class="btn btn-info btn-sm">查看详情</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-1">李四 - 工商管理专业申请</h6>
+                                    <span class="score-indicator score-medium">AI评分: 78分</span>
+                                </div>
+                                <p class="text-muted mb-2">申请编号: 2025002 | 申请时间: 2025-01-14</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>AI分析结果:</strong>
+                                        <ul class="mt-2">
+                                            <li>✅ 英语成绩达标 (125分)</li>
+                                            <li>⚠️ 数学成绩偏低 (108分), 需关注</li>
+                                            <li>✅ 有相关社会实践经验</li>
+                                            <li>❌ 个人陈述缺乏专业认知深度</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>推荐操作:</strong>
+                                        <div class="mt-2">
+                                            <button class="btn btn-warning btn-sm me-2">面试评估</button>
+                                            <button class="btn btn-secondary btn-sm me-2">暂缓决定</button>
+                                            <button class="btn btn-info btn-sm">查看详情</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-1">王五 - 电子信息工程专业申请</h6>
+                                    <span class="score-indicator score-low">AI评分: 65分</span>
+                                </div>
+                                <p class="text-muted mb-2">申请编号: 2025003 | 申请时间: 2025-01-13</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>AI分析结果:</strong>
+                                        <ul class="mt-2">
+                                            <li>❌ 英语成绩不达标 (89分)</li>
+                                            <li>⚠️ 物理成绩一般 (102分)</li>
+                                            <li>❌ 缺少推荐信</li>
+                                            <li>❌ 个人陈述过于简单</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>推荐操作:</strong>
+                                        <div class="mt-2">
+                                            <button class="btn btn-danger btn-sm me-2">不予录取</button>
+                                            <button class="btn btn-warning btn-sm me-2">建议重新申请</button>
+                                            <button class="btn btn-info btn-sm">查看详情</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 在线咨询室 -->
+                <div id="online-consultation" class="card mb-6">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">国内院校在线咨询室</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-3">
+                                <div class="border rounded-lg p-4 h-100">
+                                    <h3 class="h6 mb-3 text-primary">咨询室列表</h3>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2 p-2 border rounded cursor-pointer hover:bg-primary-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>华东师范大学招生办</span>
+                                                <span class="badge badge-success">在线</span>
+                                            </div>
+                                        </li>
+                                        <li class="mb-2 p-2 border rounded cursor-pointer hover:bg-primary-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>武汉理工大学招生办</span>
+                                                <span class="badge badge-success">在线</span>
+                                            </div>
+                                        </li>
+                                        <li class="mb-2 p-2 border rounded cursor-pointer hover:bg-primary-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>山东师范大学招生办</span>
+                                                <span class="badge badge-secondary">离线</span>
+                                            </div>
+                                        </li>
+                                        <li class="mb-2 p-2 border rounded cursor-pointer hover:bg-primary-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>四川大学招生办</span>
+                                                <span class="badge badge-success">在线</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <div class="border rounded-lg p-4 h-100">
+                                    <h3 class="h6 mb-3 text-primary">电子科技大学招生办咨询室</h3>
+                                    <div class="video-container mb-3">
+                                        <div class="text-center">
+                                            <div style="font-size: 3rem;">📹</div>
+                                            <p class="text-muted mt-2">视频咨询区域</p>
+                                        </div>
+                                    </div>
+                                    <div class="chat-box mb-3">
+                                        <div class="mb-2">
+                                            <div class="text-sm font-weight-bold text-primary mb-1">咨询师</div>
+                                            <div class="bg-primary-light p-2 rounded-lg inline-block max-w-75">您好，欢迎咨询电子科技大学招生事宜，请问有什么可以帮您的？</div>
+                                        </div>
+                                        <div class="mb-2 text-right">
+                                            <div class="text-sm font-weight-bold text-dark mb-1">我</div>
+                                            <div class="bg-primary p-2 rounded-lg inline-block max-w-75 text-white">您好，我想了解一下电子科技大学计算机专业的录取要求。</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <div class="text-sm font-weight-bold text-primary mb-1">咨询师</div>
+                                            <div class="bg-primary-light p-2 rounded-lg inline-block max-w-75">您好，计算机专业属于热门专业，通常要求高考英语成绩超过90分，并且数学和物理成绩优异。具体要求可以参考我校发布的招生简章。</div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="consultationInput" placeholder="输入咨询内容" onkeypress="handleConsultationKeyPress(event)">
+                                        <button class="btn btn-primary" type="button" onclick="sendConsultationMessage()">发送</button>
+                                        <button class="btn btn-secondary" type="button" onclick="startVideoCall()">视频连接</button>
+                                        <button class="btn btn-outline-primary" type="button" onclick="startAIConsultation()">
+                                            <i class="fas fa-robot"></i> AI辅助
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>© 2025 阳光招生平台 版权所有</p>
+            <p>联系电话：010-12345678 | 邮箱：contact@ygzspt.edu.cn</p>
+        </div>
+    </footer>
+
+    <!-- AI招生助手组件 -->
+    <div id="aiAssistant" class="ai-assistant-container ai-assistant-hidden">
+        <div class="ai-assistant-header">
+            <div>
+                <h5 class="mb-0">🤖 智能招生助手</h5>
+                <small>AI赋能招生管理</small>
+            </div>
+            <button class="btn btn-sm btn-outline-light" onclick="toggleAIAssistant()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="ai-assistant-body" id="aiChatBody">
+            <div class="ai-message assistant">
+                您好！我是智能招生助手，专门为招生教师提供AI辅助服务。我可以帮助您：
+                <br>• 分析申请材料的完整性和质量
+                <br>• 评估申请者的录取概率
+                <br>• 提供个性化的面试问题建议
+                <br>• 生成申请者评估报告
+                <br>• AI文书润色和优化建议
+                <br>• 在线咨询面试系统支持
+                <br>• 情景感知智能推荐
+                <br><br>请问有什么可以帮助您的吗？
+            </div>
+        </div>
+        <div class="ai-input-area">
+            <input type="text" class="ai-input" id="aiInput" placeholder="请输入您的问题..." onkeypress="handleKeyPress(event)">
+            <button class="ai-send-btn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- AI助手切换按钮 -->
+    <button class="ai-toggle-btn" onclick="toggleAIAssistant()">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // AI招生助手类
+        class AdmissionAIAssistant {
+            constructor() {
+                this.apiKey = 'sk-3cdcf9f01e5141d09060b4b76045edda';
+                this.apiUrl = 'https://api.deepseek.com/v1/chat/completions';
+                this.chatHistory = this.loadChatHistory();
+                this.isLoading = false;
+            }
+
+            async sendMessage(message) {
+                if (this.isLoading) return;
+                
+                this.isLoading = true;
+                this.addMessage('user', message);
+                this.showLoading();
+
+                try {
+                    const response = await fetch(this.apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'deepseek-chat',
+                            messages: [
+                                {
+                                    role: 'system',
+                                    content: '你是一个专业的招生管理AI助手，专门为项目招生教师提供智能化服务。你的主要职责包括：1. 分析申请材料的完整性和质量；2. 评估申请者的录取概率和匹配度；3. 提供个性化的面试问题建议；4. 生成申请者评估报告；5. 协助招生决策制定；6. 提供AI文书润色服务；7. 在线咨询面试系统支持；8. 情景感知智能推荐。请用专业、友好的语调回答问题，并提供具体可行的建议。'
+                                },
+                                ...this.chatHistory.slice(-10),
+                                { role: 'user', content: message }
+                            ],
+                            temperature: 0.7,
+                            max_tokens: 1500
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const aiResponse = data.choices[0].message.content;
+                    
+                    this.hideLoading();
+                    this.addMessage('assistant', aiResponse);
+                    this.saveChatHistory();
+                } catch (error) {
+                    console.error('AI请求错误:', error);
+                    this.hideLoading();
+                    this.addMessage('assistant', '抱歉，我暂时无法回答您的问题。请稍后再试或联系技术支持。');
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+
+            addMessage(role, content) {
+                const chatBody = document.getElementById('aiChatBody');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `ai-message ${role} message-fade-in`;
+                
+                if (role === 'assistant') {
+                    messageDiv.innerHTML = `<span class="typewriter-text">${content}</span>`;
+                } else {
+                    messageDiv.textContent = content;
+                }
+                
+                chatBody.appendChild(messageDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+
+                this.chatHistory.push({ role, content });
+            }
+
+            showLoading() {
+                const chatBody = document.getElementById('aiChatBody');
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'ai-thinking message-fade-in';
+                loadingDiv.id = 'loadingMessage';
+                loadingDiv.innerHTML = `
+                    <div class="thinking-icon"></div>
+                    <span class="thinking-text">AI正在思考中...</span>
+                    <div class="ai-progress-bar"></div>
+                `;
+                chatBody.appendChild(loadingDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+
+            hideLoading() {
+                const loadingMessage = document.getElementById('loadingMessage');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+            }
+
+            loadChatHistory() {
+                const saved = localStorage.getItem('admissionAIChatHistory');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveChatHistory() {
+                localStorage.setItem('admissionAIChatHistory', JSON.stringify(this.chatHistory));
+            }
+        }
+
+        // 全局变量
+        let admissionAI;
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            admissionAI = new AdmissionAIAssistant();
+            console.log('招生管理页面AI助手已初始化');
+        });
+
+        // AI助手功能函数
+        function toggleAIAssistant() {
+            const assistant = document.getElementById('aiAssistant');
+            assistant.classList.toggle('ai-assistant-hidden');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (message && admissionAI) {
+                admissionAI.sendMessage(message);
+                input.value = '';
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // 在线咨询功能
+        function sendConsultationMessage() {
+            const input = document.getElementById('consultationInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addConsultationMessage('user', message);
+                input.value = '';
+                
+                // 模拟咨询师回复
+                setTimeout(() => {
+                    const responses = [
+                        '感谢您的咨询，我会为您详细解答。',
+                        '这是一个很好的问题，让我为您查询相关信息。',
+                        '根据您的情况，我建议您可以考虑以下几个方面...',
+                        '我理解您的关切，让我为您提供准确的信息。'
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addConsultationMessage('counselor', randomResponse);
+                }, 1000);
+            }
+        }
+
+        function addConsultationMessage(role, message) {
+            const chatBox = document.querySelector('.chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = role === 'user' ? 'mb-2 text-right' : 'mb-2';
+            
+            if (role === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="text-sm font-weight-bold text-dark mb-1">我</div>
+                    <div class="bg-primary p-2 rounded-lg inline-block max-w-75 text-white">${message}</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="text-sm font-weight-bold text-primary mb-1">咨询师</div>
+                    <div class="bg-primary-light p-2 rounded-lg inline-block max-w-75">${message}</div>
+                `;
+            }
+            
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleConsultationKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendConsultationMessage();
+            }
+        }
+
+        function startVideoCall() {
+            alert('视频通话功能正在开发中，敬请期待！');
+        }
+
+        function startAIConsultation() {
+            const input = document.getElementById('consultationInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                // 将咨询内容发送给AI助手
+                if (admissionAI) {
+                    const aiMessage = `作为在线咨询助手，请帮助回答以下学生咨询：${message}`;
+                    admissionAI.sendMessage(aiMessage);
+                    toggleAIAssistant(); // 打开AI助手面板
+                    input.value = '';
+                }
+            } else {
+                // 如果没有输入内容，直接打开AI助手
+                toggleAIAssistant();
+            }
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                // 验证href属性不为空且不只是'#'
+                if (href && href !== '#' && href.length > 1) {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // 初始化图表函数
+        function initCharts() {
+            // 申请数量图表
+            const ctx = document.getElementById('applicationChart');
+            if (ctx) {
+                const applicationChart = new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['计算机科学与技术', '电子信息工程', '工商管理', '市场营销', '会计学'],
+                        datasets: [{
+                            label: '申请数量',
+                            data: [1200, 950, 1500, 800, 1100],
+                            backgroundColor: '#0f52ba',
+                            borderColor: '#0f52ba',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // 添加志愿功能
+        function addVolunteer() {
+            // 获取志愿表格的tbody
+            const tbody = document.querySelector('#application table tbody');
+            if (!tbody) return;
+            
+            // 获取当前志愿数量（排除添加按钮行）
+            const currentRows = tbody.querySelectorAll('tr');
+            const volunteerCount = currentRows.length - 1; // 减去添加按钮行
+            
+            if (volunteerCount >= 6) {
+                alert('最多只能添加6个志愿！');
+                return;
+            }
+            
+            // 重置表单
+            document.getElementById('collegeSelect').value = '';
+            document.getElementById('majorSelect').value = '';
+            document.getElementById('adjustmentCheck').checked = false;
+            
+            // 显示模态框
+            const modal = new bootstrap.Modal(document.getElementById('addVolunteerModal'));
+            modal.show();
+        }
+        
+        // 确认添加志愿
+        function confirmAddVolunteer() {
+            const collegeSelect = document.getElementById('collegeSelect');
+            const majorSelect = document.getElementById('majorSelect');
+            const adjustmentCheck = document.getElementById('adjustmentCheck');
+            
+            // 验证输入
+            if (!collegeSelect.value) {
+                alert('请选择院校！');
+                return;
+            }
+            
+            if (!majorSelect.value) {
+                alert('请选择专业！');
+                return;
+            }
+            
+            // 院校和专业选项
+            const colleges = ['青岛理工大学', '北京交通大学', '上海财经大学', '厦门大学', '西安外国语大学', '中国海洋大学'];
+            const majors = ['计算机科学与技术', '电子信息工程', '工商管理', '市场营销', '会计学', '人力资源管理'];
+            
+            // 获取志愿表格的tbody
+            const tbody = document.querySelector('#application table tbody');
+            const currentRows = tbody.querySelectorAll('tr');
+            const volunteerCount = currentRows.length - 1; // 减去添加按钮行
+            
+            // 创建新的志愿行
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${volunteerCount + 1}</td>
+                <td>${colleges[parseInt(collegeSelect.value)]}</td>
+                <td>${majors[parseInt(majorSelect.value)]}</td>
+                <td>${adjustmentCheck.checked ? '是' : '否'}</td>
+                <td><a href="#" class="text-primary" onclick="editVolunteer(this)">修改</a> | <a href="#" class="text-danger" onclick="deleteVolunteer(this)">删除</a></td>
+            `;
+            
+            // 在添加按钮行之前插入新行
+            const addButtonRow = tbody.querySelector('tr:last-child');
+            tbody.insertBefore(newRow, addButtonRow);
+            
+            // 关闭模态框
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addVolunteerModal'));
+            modal.hide();
+            
+            alert('志愿添加成功！');
+        }
+        
+        // 编辑志愿功能
+        function editVolunteer(element) {
+            const row = element.closest('tr');
+            const cells = row.querySelectorAll('td');
+            
+            const currentCollege = cells[1].textContent;
+            const currentMajor = cells[2].textContent;
+            const currentAdjustment = cells[3].textContent === '是';
+            
+            const colleges = ['青岛理工大学', '北京交通大学', '上海财经大学', '厦门大学', '西安外国语大学', '中国海洋大学'];
+            const majors = ['计算机科学与技术', '电子信息工程', '工商管理', '市场营销', '会计学', '人力资源管理'];
+            
+            // 设置当前值到表单
+            const collegeIndex = colleges.indexOf(currentCollege);
+            const majorIndex = majors.indexOf(currentMajor);
+            
+            document.getElementById('collegeSelect').value = collegeIndex >= 0 ? collegeIndex : '';
+            document.getElementById('majorSelect').value = majorIndex >= 0 ? majorIndex : '';
+            document.getElementById('adjustmentCheck').checked = currentAdjustment;
+            
+            // 存储当前编辑的行
+            window.currentEditingRow = row;
+            
+            // 显示模态框
+            const modal = new bootstrap.Modal(document.getElementById('addVolunteerModal'));
+            document.getElementById('addVolunteerModalLabel').textContent = '修改志愿';
+            document.querySelector('#addVolunteerModal .btn-primary').textContent = '确认修改';
+            document.querySelector('#addVolunteerModal .btn-primary').setAttribute('onclick', 'confirmEditVolunteer()');
+            modal.show();
+        }
+        
+        // 确认修改志愿
+        function confirmEditVolunteer() {
+            const collegeSelect = document.getElementById('collegeSelect');
+            const majorSelect = document.getElementById('majorSelect');
+            const adjustmentCheck = document.getElementById('adjustmentCheck');
+            
+            // 验证输入
+            if (!collegeSelect.value) {
+                alert('请选择院校！');
+                return;
+            }
+            
+            if (!majorSelect.value) {
+                alert('请选择专业！');
+                return;
+            }
+            
+            const colleges = ['青岛理工大学', '北京交通大学', '上海财经大学', '厦门大学', '西安外国语大学', '中国海洋大学'];
+            const majors = ['计算机科学与技术', '电子信息工程', '工商管理', '市场营销', '会计学', '人力资源管理'];
+            
+            // 更新行内容
+            const cells = window.currentEditingRow.querySelectorAll('td');
+            cells[1].textContent = colleges[parseInt(collegeSelect.value)];
+            cells[2].textContent = majors[parseInt(majorSelect.value)];
+            cells[3].textContent = adjustmentCheck.checked ? '是' : '否';
+            
+            // 关闭模态框
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addVolunteerModal'));
+            modal.hide();
+            
+            // 重置模态框状态
+            document.getElementById('addVolunteerModalLabel').textContent = '添加志愿';
+            document.querySelector('#addVolunteerModal .btn-primary').textContent = '确认添加';
+            document.querySelector('#addVolunteerModal .btn-primary').setAttribute('onclick', 'confirmAddVolunteer()');
+            
+            alert('志愿修改成功！');
+        }
+        
+        // 删除志愿功能
+        function deleteVolunteer(element) {
+            if (confirm('确定要删除这个志愿吗？')) {
+                const row = element.closest('tr');
+                const tbody = row.parentNode;
+                row.remove();
+                
+                // 重新编号
+                const rows = tbody.querySelectorAll('tr:not(:last-child)'); // 排除添加按钮行
+                rows.forEach((row, index) => {
+                    row.querySelector('td:first-child').textContent = index + 1;
+                });
+                
+                alert('志愿删除成功！');
+            }
+        }
+        
+        // 数据导出函数
+        function exportAdmissionData(type) {
+            if (typeof DataExportManager !== 'undefined') {
+                let data = [];
+                let filename = '';
+                
+                switch(type) {
+                    case 'recruitment-info':
+                        data = [
+                            ['院校名称', '招生章程', '发布时间', '状态'],
+                            ['中央财经大学', '2025年中央财经大学招生章程', '2025-03-15', '已发布'],
+                            ['中国海洋大学', '2025年中国海洋大学招生章程', '2025-02-20', '已发布'],
+                            ['厦门大学', '2025年厦门大学招生章程', '2025-01-10', '已发布'],
+                            ['北京理工大学', '2025年北京理工大学招生章程', '2025-03-01', '已发布']
+                        ];
+                        filename = '招生简章信息';
+                        break;
+                    case 'college-list':
+                        data = [
+                            ['院校名称', '类型', '地区', '合作项目数', '联系方式'],
+                            ['中央财经大学', '财经类', '北京', '15', 'contact@cufe.edu.cn'],
+                            ['中国海洋大学', '综合类', '山东', '12', 'info@ouc.edu.cn'],
+                            ['厦门大学', '综合类', '福建', '18', 'admission@xmu.edu.cn'],
+                            ['北京理工大学', '理工类', '北京', '20', 'zs@bit.edu.cn']
+                        ];
+                        filename = '合作院校信息';
+                        break;
+                    case 'application-data':
+                        data = [
+                            ['专业', '申请数量', '录取数量', '录取率'],
+                            ['计算机科学与技术', '1200', '300', '25%'],
+                            ['电子信息工程', '950', '280', '29.5%'],
+                            ['工商管理', '1500', '400', '26.7%'],
+                            ['市场营销', '800', '200', '25%'],
+                            ['会计学', '1100', '330', '30%']
+                        ];
+                        filename = '申请数据统计';
+                        break;
+                    default:
+                        data = [['项目', '内容'], ['招生管理', '暂无数据']];
+                        filename = '招生管理数据';
+                }
+                
+                if (window.exportUI) {
+                    window.exportUI.showExportModal(data, filename);
+                }
+            }
+        }
+        
+        // 初始化数据导出功能
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof DataExportManager !== 'undefined') {
+                window.dataExportManager = new DataExportManager();
+                window.exportUI = new ExportUI();
+            }
+        });
+    </script>
+    
+    <!-- 引入数据导出功能 -->
+    <script src="js/data-export.js"></script>
+</body>
+</html>

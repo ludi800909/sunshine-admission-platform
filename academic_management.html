@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教务管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #3b82f6;
+            --accent-color: #93c5fd;
+            --light-color: #f8fafc;
+            --dark-color: #0f172a;
+        }
+        .bg-primary-custom {
+            background-color: var(--primary-color);
+        }
+        .text-primary-custom {
+            color: var(--primary-color);
+        }
+        .nav-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar {
+            height: 100%;
+            min-height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+        .tab-content {
+            min-height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 左侧导航 -->
+            <div class="col-md-2 bg-primary-custom text-white sidebar">
+                <div class="p-4">
+                    <h3 class="text-center mb-4">教务管理系统</h3>
+                    <div class="nav flex-column">
+                        <div class="nav-item active" data-target="teaching-plan">教学计划</div>
+                        <div class="nav-item" data-target="course-management">开课管理</div>
+                        <div class="nav-item" data-target="schedule">排课管理</div>
+                        <div class="nav-item" data-target="course-selection">选课管理</div>
+                        <div class="nav-item" data-target="examination">考务管理</div>
+                        <div class="nav-item" data-target="score-management">成绩管理</div>
+                        <div class="nav-item" data-target="graduation">毕业设计</div>
+                        <div class="nav-item" data-target="notifications">系统通知</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="col-md-8 p-4">
+                <h1 class="mb-4 text-primary-custom">教务管理</h1>
+
+                <!-- 教学计划 -->
+                <div id="teaching-plan" class="tab-content active">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">教学计划管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择院校</label>
+                                        <select class="form-select">
+                                            <option>中国石油大学(北京)</option>
+                                            <option>北京邮电大学</option>
+                                            <option>首都师范大学</option>
+                                            <option>对外经济贸易大学</option>
+                                            <option>上海立信会计金融学院</option>
+                                            <option>北京交通大学</option>
+                                            <option>中国地质大学</option>
+                                            <option>华南师范大学</option>
+                                            <option>北京第二外国语学院</option>
+                                            <option>广东外语外贸大学</option>
+                                            <option>上海外国语大学贤达经济人文学院</option>
+                                            <option>中央财经大学</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择专业</label>
+                                        <select class="form-select">
+                                            <option>国际贸易与商务</option>
+                                            <option>商务信息技术</option>
+                                            <option>市场营销</option>
+                                            <option>商务会计</option>
+                                            <option>商务管理</option>
+                                            <option>行政与信息管理</option>
+                                            <option>计算机网络技术</option>
+                                            <option>计算机软件开发</option>
+                                            <option>计算机技术支持</option>
+                                            <option>计算机科学与技术</option>
+                                            <option>电子信息工程</option>
+                                            <option>工商管理</option>
+                                            <option>会计学</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择年级</label>
+                                        <select class="form-select">
+                                            <option>2021级</option>
+                                            <option>2022级</option>
+                                            <option>2023级</option>
+                                            <option>2024级</option>
+                                            <option>2025级</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询教学计划</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>课程代码</th>
+                                            <th>课程名称</th>
+                                            <th>学分</th>
+                                            <th>学时</th>
+                                            <th>学期</th>
+                                            <th>课程类型</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>BUS101</td>
+                                            <td>管理学原理</td>
+                                            <td>3</td>
+                                            <td>48</td>
+                                            <td>1</td>
+                                            <td>必修课</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ECON101</td>
+                                            <td>微观经济学</td>
+                                            <td>3</td>
+                                            <td>48</td>
+                                            <td>1</td>
+                                            <td>必修课</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>MATH101</td>
+                                            <td>高等数学</td>
+                                            <td>4</td>
+                                            <td>64</td>
+                                            <td>1</td>
+                                            <td>必修课</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">添加课程</button>
+                                <button class="btn btn-secondary ms-2">导出教学计划</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 开课管理 -->
+                <div id="course-management" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">开课管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择学期</label>
+                                        <select class="form-select">
+                                            <option>2024-2025学年第1学期</option>
+                                            <option>2024-2025学年第2学期</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择专业</label>
+                                        <select class="form-select">
+                                            <option>国际贸易与商务</option>
+                                            <option>商务信息技术</option>
+                                            <option>市场营销</option>
+                                            <option>商务会计</option>
+                                            <option>商务管理</option>
+                                            <option>行政与信息管理</option>
+                                            <option>计算机网络技术</option>
+                                            <option>计算机软件开发</option>
+                                            <option>计算机技术支持</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">课程状态</label>
+                                        <select class="form-select">
+                                            <option>全部</option>
+                                            <option>已发布</option>
+                                            <option>未发布</option>
+                                            <option>已结束</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询课程</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>课程代码</th>
+                                            <th>课程名称</th>
+                                            <th>专业</th>
+                                            <th>教师</th>
+                                            <th>上课时间</th>
+                                            <th>上课地点</th>
+                                            <th>学分</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>BUS101</td>
+                                            <td>管理学原理</td>
+                                            <td>国际贸易与商务</td>
+                                            <td>张教授</td>
+                                            <td>周一 1-2节</td>
+                                            <td>教学1号楼 301</td>
+                                            <td>3</td>
+                                            <td><span class="badge bg-success">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                                <button class="btn btn-sm btn-danger">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ECON101</td>
+                                            <td>微观经济学</td>
+                                            <td>商务管理</td>
+                                            <td>李副教授</td>
+                                            <td>周二 3-4节</td>
+                                            <td>教学2号楼 202</td>
+                                            <td>3</td>
+                                            <td><span class="badge bg-success">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                                <button class="btn btn-sm btn-danger">删除</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">新增课程</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 排课管理 -->
+                <div id="schedule" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">排课管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择学期</label>
+                                        <select class="form-select">
+                                            <option>2024-2025学年第1学期</option>
+                                            <option>2024-2025学年第2学期</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择专业</label>
+                                        <select class="form-select">
+                                            <option>国际贸易与商务</option>
+                                            <option>商务信息技术</option>
+                                            <option>市场营销</option>
+                                            <option>商务会计</option>
+                                            <option>商务管理</option>
+                                            <option>行政与信息管理</option>
+                                            <option>计算机网络技术</option>
+                                            <option>计算机软件开发</option>
+                                            <option>计算机技术支持</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择教师</label>
+                                        <select class="form-select">
+                                            <option>全部</option>
+                                            <option>张教授</option>
+                                            <option>李副教授</option>
+                                            <option>王讲师</option>
+                                            <option>赵助教</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询排课</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>课程名称</th>
+                                            <th>教师</th>
+                                            <th>专业班级</th>
+                                            <th>上课时间</th>
+                                            <th>上课地点</th>
+                                            <th>周次</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>管理学原理</td>
+                                            <td>张教授</td>
+                                            <td>国际贸易与商务2024-1班</td>
+                                            <td>周一 1-2节</td>
+                                            <td>教学1号楼 301</td>
+                                            <td>1-16周</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看</button>
+                                                <button class="btn btn-sm btn-secondary">调整</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>微观经济学</td>
+                                            <td>李副教授</td>
+                                            <td>商务管理2024-1班</td>
+                                            <td>周二 3-4节</td>
+                                            <td>教学2号楼 202</td>
+                                            <td>1-16周</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看</button>
+                                                <button class="btn btn-sm btn-secondary">调整</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">手动排课</button>
+                                <button class="btn btn-secondary ms-2">自动排课</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 选课管理 -->
+                <div id="course-selection" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">选课管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4 p-3 bg-info-subtle rounded-lg">
+                                <p class="text-sm text-info mb-0"><i class="bi bi-info-circle"></i> 当前选课阶段：2024-2025学年第1学期 第二轮选课</p>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择专业</label>
+                                        <select class="form-select">
+                                            <option>国际贸易与商务</option>
+                                            <option>商务信息技术</option>
+                                            <option>市场营销</option>
+                                            <option>商务会计</option>
+                                            <option>商务管理</option>
+                                            <option>行政与信息管理</option>
+                                            <option>计算机网络技术</option>
+                                            <option>计算机软件开发</option>
+                                            <option>计算机技术支持</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择年级</label>
+                                        <select class="form-select">
+                                            <option>2024级</option>
+                                            <option>2023级</option>
+                                            <option>2022级</option>
+                                            <option>2021级</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">课程类型</label>
+                                        <select class="form-select">
+                                            <option>全部</option>
+                                            <option>必修课</option>
+                                            <option>选修课</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询课程</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive mb-4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>课程代码</th>
+                                            <th>课程名称</th>
+                                            <th>教师</th>
+                                            <th>学分</th>
+                                            <th>剩余名额</th>
+                                            <th>上课时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>BUS201</td>
+                                            <td>国际贸易实务</td>
+                                            <td>张教授</td>
+                                            <td>3</td>
+                                            <td>20/40</td>
+                                            <td>周三 1-2节</td>
+                                            <td><button class="btn btn-sm btn-primary">选课</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>ECON201</td>
+                                            <td>宏观经济学</td>
+                                            <td>李副教授</td>
+                                            <td>3</td>
+                                            <td>15/40</td>
+                                            <td>周四 3-4节</td>
+                                            <td><button class="btn btn-sm btn-primary">选课</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h3 class="h6 mb-0">已选课程</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>课程代码</th>
+                                                    <th>课程名称</th>
+                                                    <th>教师</th>
+                                                    <th>学分</th>
+                                                    <th>上课时间</th>
+                                                    <th>操作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>BUS101</td>
+                                                    <td>管理学原理</td>
+                                                    <td>张教授</td>
+                                                    <td>3</td>
+                                                    <td>周一 1-2节</td>
+                                                    <td><button class="btn btn-sm btn-danger">退课</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>ECON101</td>
+                                                    <td>微观经济学</td>
+                                                    <td>李副教授</td>
+                                                    <td>3</td>
+                                                    <td>周二 3-4节</td>
+                                                    <td><button class="btn btn-sm btn-danger">退课</button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 考务管理 -->
+                <div id="examination" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">考务管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择学期</label>
+                                        <select class="form-select">
+                                            <option>2024-2025学年第1学期</option>
+                                            <option>2023-2024学年第2学期</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择专业</label>
+                                        <select class="form-select">
+                                            <option>国际贸易与商务</option>
+                                            <option>商务信息技术</option>
+                                            <option>市场营销</option>
+                                            <option>商务会计</option>
+                                            <option>商务管理</option>
+                                            <option>行政与信息管理</option>
+                                            <option>计算机网络技术</option>
+                                            <option>计算机软件开发</option>
+                                            <option>计算机技术支持</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">考试类型</label>
+                                        <select class="form-select">
+                                            <option>全部</option>
+                                            <option>期中考试</option>
+                                            <option>期末考试</option>
+                                            <option>补考</option>
+                                            <option>重修考试</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询考试安排</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>课程名称</th>
+                                            <th>考试时间</th>
+                                            <th>考试地点</th>
+                                            <th>考试类型</th>
+                                            <th>监考教师</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>管理学原理</td>
+                                            <td>2024-11-15 14:00-16:00</td>
+                                            <td>教学1号楼 301</td>
+                                            <td>期中考试</td>
+                                            <td>张教授</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>微观经济学</td>
+                                            <td>2024-11-16 10:00-12:00</td>
+                                            <td>教学2号楼 202</td>
+                                            <td>期中考试</td>
+                                            <td>李副教授</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">添加考试安排</button>
+                                <button class="btn btn-secondary ms-2">导出考试安排表</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成绩管理 -->
+                <div id="score-management" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">成绩管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择学期</label>
+                                        <select class="form-select">
+                                            <option>2024-2025学年第1学期</option>
+                                            <option>2023-2024学年第2学期</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择课程</label>
+                                        <select class="form-select">
+                                            <option>管理学原理</option>
+                                            <option>微观经济学</option>
+                                            <option>高等数学</option>
+                                            <option>国际贸易实务</option>
+                                            <option>宏观经济学</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择班级</label>
+                                        <select class="form-select">
+                                            <option>国际贸易与商务2024-1班</option>
+                                            <option>国际贸易与商务2024-2班</option>
+                                            <option>商务管理2024-1班</option>
+                                            <option>商务会计2024-1班</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询成绩</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>学号</th>
+                                            <th>姓名</th>
+                                            <th>平时成绩</th>
+                                            <th>期中考试</th>
+                                            <th>期末考试</th>
+                                            <th>总评成绩</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>20240101</td>
+                                            <td>张三</td>
+                                            <td>85</td>
+                                            <td>80</td>
+                                            <td>88</td>
+                                            <td>86</td>
+                                            <td><button class="btn btn-sm btn-secondary">录入/编辑</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>20240102</td>
+                                            <td>李四</td>
+                                            <td>90</td>
+                                            <td>85</td>
+                                            <td>92</td>
+                                            <td>90</td>
+                                            <td><button class="btn btn-sm btn-secondary">录入/编辑</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">批量导入成绩</button>
+                                <button class="btn btn-secondary ms-2">导出成绩单</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 毕业设计 -->
+                <div id="graduation" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">毕业设计管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择专业</label>
+                                        <select class="form-select">
+                                            <option>国际贸易与商务</option>
+                                            <option>商务信息技术</option>
+                                            <option>市场营销</option>
+                                            <option>商务会计</option>
+                                            <option>商务管理</option>
+                                            <option>行政与信息管理</option>
+                                            <option>计算机网络技术</option>
+                                            <option>计算机软件开发</option>
+                                            <option>计算机技术支持</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">选择指导教师</label>
+                                        <select class="form-select">
+                                            <option>全部</option>
+                                            <option>张教授</option>
+                                            <option>李副教授</option>
+                                            <option>王讲师</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">毕业设计状态</label>
+                                        <select class="form-select">
+                                            <option>全部</option>
+                                            <option>选题阶段</option>
+                                            <option>开题阶段</option>
+                                            <option>中期检查</option>
+                                            <option>结题验收</option>
+                                            <option>已完成</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100">查询</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>学生姓名</th>
+                                            <th>学号</th>
+                                            <th>专业</th>
+                                            <th>论文题目</th>
+                                            <th>指导教师</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>张三</td>
+                                            <td>20210101</td>
+                                            <td>国际贸易与商务</td>
+                                            <td>跨境电商平台运营模式研究</td>
+                                            <td>张教授</td>
+                                            <td><span class="badge bg-success">已完成</span></td>
+                                            <td><button class="btn btn-sm btn-primary">查看详情</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>李四</td>
+                                            <td>20210102</td>
+                                            <td>计算机软件开发</td>
+                                            <td>基于大数据的学生成绩分析系统设计</td>
+                                            <td>李副教授</td>
+                                            <td><span class="badge bg-warning">中期检查</span></td>
+                                            <td><button class="btn btn-sm btn-primary">查看详情</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 text-right">
+                                <button class="btn btn-primary">添加毕业设计题目</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 系统通知 -->
+                <div id="notifications" class="tab-content d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">系统通知管理</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4 text-right">
+                                <button class="btn btn-primary">发布新通知</button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>标题</th>
+                                            <th>内容</th>
+                                            <th>发布时间</th>
+                                            <th>发布人</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>关于2024-2025学年第1学期选课时间调整的通知</td>
+                                            <td>因系统维护，原定于10月15日开始的第二轮选课将推迟至10月20日...</td>
+                                            <td>2024-10-10</td>
+                                            <td>教务处</td>
+                                            <td><span class="badge bg-success">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                                <button class="btn btn-sm btn-danger">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>关于组织2024年秋季学期期中考试的通知</td>
+                                            <td>2024年秋季学期期中考试将于11月15日-11月20日举行，请各班级做好准备...</td>
+                                            <td>2024-10-25</td>
+                                            <td>教务处</td>
+                                            <td><span class="badge bg-success">已发布</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">查看详情</button>
+                                                <button class="btn btn-sm btn-secondary">编辑</button>
+                                                <button class="btn btn-sm btn-danger">删除</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI助手面板 -->
+            <div class="col-md-2 p-3 bg-light border-start">
+                <div class="ai-assistant-panel">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-robot me-2"></i>
+                                教务AI助手
+                            </h5>
+                        </div>
+                        <div class="card-body p-2">
+                            <!-- AI功能按钮 -->
+                            <div class="d-grid gap-2 mb-3">
+                                <button class="btn btn-outline-primary btn-sm" onclick="analyzeTeachingPlan()">
+                                    <i class="fas fa-chart-line me-1"></i>
+                                    教学计划分析
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="recommendCourses()">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    课程推荐
+                                </button>
+                                <button class="btn btn-outline-info btn-sm" onclick="analyzeGrades()">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    成绩分析
+                                </button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="graduationGuidance()">
+                                    <i class="fas fa-graduation-cap me-1"></i>
+                                    毕业设计指导
+                                </button>
+                            </div>
+
+                            <!-- AI对话区域 -->
+                            <div class="ai-chat-container">
+                                <div class="chat-messages" id="aiChatMessages" style="height: 300px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 0.5rem; background: white;">
+                                    <div class="message ai-message mb-2">
+                                        <div class="message-content p-2 bg-light rounded">
+                                            <small class="text-muted">AI助手</small>
+                                            <p class="mb-0 small">您好！我是教务AI助手，可以帮您分析教学计划、推荐课程、分析成绩和指导毕业设计。请选择需要的功能。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="chat-input mt-2">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" id="aiChatInput" placeholder="输入您的问题...">
+                                        <button class="btn btn-primary" type="button" onclick="sendAIMessage()">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI分析结果展示区 -->
+                            <div class="ai-analysis-result mt-3" id="aiAnalysisResult" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white py-2">
+                                        <h6 class="mb-0">AI分析结果</h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div id="analysisContent"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 导航切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保DOM加载完成后再执行
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有active类
+                    document.querySelectorAll('.nav-item').forEach(navItem => {
+                        navItem.classList.remove('active');
+                    });
+                    document.querySelectorAll('.tab-content').forEach(tab => {
+                        tab.classList.add('d-none');
+                        tab.classList.remove('active');
+                    });
+
+                    // 添加active类到当前点击项
+                    this.classList.add('active');
+                    const target = this.getAttribute('data-target');
+                    const targetTab = document.getElementById(target);
+                    if (targetTab) {
+                        targetTab.classList.remove('d-none');
+                        targetTab.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // 模拟数据加载
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('教务管理系统已加载完成');
+            // 这里可以添加AJAX请求或其他初始化操作
+        });
+
+        // DeepSeek API配置
+        const DEEPSEEK_API_KEY = 'sk-3cdcf9f01e5141d09060b4b76045edda';
+        const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+
+        // AI助手功能实现
+        class AcademicAIAssistant {
+            constructor() {
+                this.chatMessages = document.getElementById('aiChatMessages');
+                this.chatInput = document.getElementById('aiChatInput');
+                this.analysisResult = document.getElementById('aiAnalysisResult');
+                this.analysisContent = document.getElementById('analysisContent');
+                
+                // 绑定回车键发送消息
+                this.chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendMessage();
+                    }
+                });
+            }
+
+            async callDeepSeekAPI(messages) {
+                try {
+                    const response = await fetch(DEEPSEEK_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                        },
+                        body: JSON.stringify({
+                            model: 'deepseek-chat',
+                            messages: messages,
+                            temperature: 0.7,
+                            max_tokens: 1000
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    return data.choices[0].message.content;
+                } catch (error) {
+                    console.error('DeepSeek API调用错误:', error);
+                    return '抱歉，AI服务暂时不可用，请稍后再试。';
+                }
+            }
+
+            addMessage(content, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'} mb-2`;
+                
+                messageDiv.innerHTML = `
+                    <div class="message-content p-2 ${isUser ? 'bg-primary text-white' : 'bg-light'} rounded">
+                        <small class="text-muted">${isUser ? '您' : 'AI助手'}</small>
+                        <p class="mb-0 small">${content}</p>
+                    </div>
+                `;
+                
+                this.chatMessages.appendChild(messageDiv);
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+
+            showLoading() {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'loadingMessage';
+                loadingDiv.className = 'message ai-message mb-2';
+                loadingDiv.innerHTML = `
+                    <div class="message-content p-2 bg-light rounded">
+                        <small class="text-muted">AI助手</small>
+                        <p class="mb-0 small">
+                            <i class="fas fa-spinner fa-spin me-1"></i>
+                            正在分析中...
+                        </p>
+                    </div>
+                `;
+                this.chatMessages.appendChild(loadingDiv);
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+
+            hideLoading() {
+                const loadingMessage = document.getElementById('loadingMessage');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+            }
+
+            async sendMessage() {
+                const message = this.chatInput.value.trim();
+                if (!message) return;
+
+                this.addMessage(message, true);
+                this.chatInput.value = '';
+                this.showLoading();
+
+                const messages = [
+                    {
+                        role: 'system',
+                        content: '你是一个专业的教务管理AI助手，专门帮助用户处理教学计划、课程管理、成绩分析和毕业设计等教务相关问题。请提供专业、准确、实用的建议。'
+                    },
+                    {
+                        role: 'user',
+                        content: message
+                    }
+                ];
+
+                const response = await this.callDeepSeekAPI(messages);
+                this.hideLoading();
+                this.addMessage(response);
+            }
+
+            async analyzeTeachingPlan() {
+                this.showLoading();
+                
+                const messages = [
+                    {
+                        role: 'system',
+                        content: '你是教务管理专家，请分析当前的教学计划并提供优化建议。'
+                    },
+                    {
+                        role: 'user',
+                        content: '请分析当前显示的教学计划，包括课程设置的合理性、学分分布、课程难度梯度等方面，并提供优化建议。'
+                    }
+                ];
+
+                const response = await this.callDeepSeekAPI(messages);
+                this.hideLoading();
+                this.showAnalysisResult('教学计划分析', response);
+            }
+
+            async recommendCourses() {
+                this.showLoading();
+                
+                const messages = [
+                    {
+                        role: 'system',
+                        content: '你是课程推荐专家，根据专业特点和学生需求推荐合适的课程。'
+                    },
+                    {
+                        role: 'user',
+                        content: '基于当前的专业设置（国际贸易与商务、计算机相关专业等），请推荐一些有价值的选修课程，并说明推荐理由。'
+                    }
+                ];
+
+                const response = await this.callDeepSeekAPI(messages);
+                this.hideLoading();
+                this.showAnalysisResult('课程推荐', response);
+            }
+
+            async analyzeGrades() {
+                this.showLoading();
+                
+                const messages = [
+                    {
+                        role: 'system',
+                        content: '你是成绩分析专家，能够分析学生成绩数据并提供改进建议。'
+                    },
+                    {
+                        role: 'user',
+                        content: '请分析学生成绩分布情况，识别可能存在的问题（如某些课程通过率低、成绩分化严重等），并提供教学改进建议。'
+                    }
+                ];
+
+                const response = await this.callDeepSeekAPI(messages);
+                this.hideLoading();
+                this.showAnalysisResult('成绩分析', response);
+            }
+
+            async graduationGuidance() {
+                this.showLoading();
+                
+                const messages = [
+                    {
+                        role: 'system',
+                        content: '你是毕业设计指导专家，能够为学生的毕业设计提供专业指导。'
+                    },
+                    {
+                        role: 'user',
+                        content: '请为不同专业的学生提供毕业设计选题建议，包括题目方向、研究方法、可行性分析等方面的指导。'
+                    }
+                ];
+
+                const response = await this.callDeepSeekAPI(messages);
+                this.hideLoading();
+                this.showAnalysisResult('毕业设计指导', response);
+            }
+
+            showAnalysisResult(title, content) {
+                this.analysisContent.innerHTML = `
+                    <h6 class="text-primary mb-2">${title}</h6>
+                    <div class="analysis-text small">${content.replace(/\n/g, '<br>')}</div>
+                `;
+                this.analysisResult.style.display = 'block';
+                
+                // 滚动到分析结果
+                this.analysisResult.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // 初始化AI助手
+        let academicAI;
+        document.addEventListener('DOMContentLoaded', function() {
+            academicAI = new AcademicAIAssistant();
+        });
+
+        // 全局函数供按钮调用
+        function sendAIMessage() {
+            if (academicAI) {
+                academicAI.sendMessage();
+            }
+        }
+
+        function analyzeTeachingPlan() {
+            if (academicAI) {
+                academicAI.analyzeTeachingPlan();
+            }
+        }
+
+        function recommendCourses() {
+            if (academicAI) {
+                academicAI.recommendCourses();
+            }
+        }
+
+        function analyzeGrades() {
+            if (academicAI) {
+                academicAI.analyzeGrades();
+            }
+        }
+
+        function graduationGuidance() {
+            if (academicAI) {
+                academicAI.graduationGuidance();
+            }
+        }
+    </script>
+</body>
+</html>
